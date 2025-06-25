@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_libserialport/flutter_libserialport.dart';
 
 class NewBoardDetailsWidget extends StatefulWidget {
-  final String portName;
+  final SerialPort portName;
   const NewBoardDetailsWidget({
     required this.portName,
     Key? key,
@@ -25,7 +25,7 @@ class _PortDetailsScreenState extends State<NewBoardDetailsWidget> {
   void initState() {
     super.initState();
 
-    port = SerialPort(widget.portName);
+    port = widget.portName;
 
     AppLifecycleListener(
       onInactive: () => port.close(),

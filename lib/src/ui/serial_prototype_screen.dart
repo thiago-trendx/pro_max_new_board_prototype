@@ -13,70 +13,47 @@ class SerialPrototypeScreen extends StatefulWidget {
 
 class _SerialScreenState extends State<SerialPrototypeScreen> {
   List<String> availablePorts = SerialPort.availablePorts;
+  List<GoperPort> goperPorts = [];
   ValueNotifier<bool> isLoading = ValueNotifier(true);
 
   @override
   void initState() {
     super.initState();
-    _validatePorts();
+    _searchPorts();
   }
 
-  void _validatePorts() async {
+  void _searchPorts() async {
     isLoading.value = true;
     availablePorts = SerialPort.availablePorts;
-
-    print('Available ports: ${SerialPort.availablePorts}');
-
     for (var port in SerialPort.availablePorts) {
       final SerialPort serialPort = SerialPort(port);
-      late bool proMaxAvailable;
-      late bool newBoardAvailable;
-      try {
-        // verificar disponibilidade das placas na porta em questão:
-        proMaxAvailable = await _checkProMaxTreadmill(serialPort);
-        if (!proMaxAvailable) {
-          newBoardAvailable = await _checkNewBoard(serialPort);
-        }
-        // se a porta não tem nenhuma das placas conectadas, retirar da lista:
-        if (!proMaxAvailable && !newBoardAvailable) availablePorts.remove(port);
-      } catch (e) {
-        availablePorts.remove(port);
-        continue;
-      } finally {
-        serialPort.close();
-      }
+      await _validatePort(serialPort);
+      // await _initialOne(serialPort);
+      serialPort.close();
     }
-
     isLoading.value = false;
     setState(() {});
   }
 
-  Future<bool> _checkProMaxTreadmill(SerialPort serialPort) async {
+  Future<void> _validatePort(SerialPort serialPort) async {
     try {
       serialPort.openReadWrite();
-      serialPort.write(Uint8List.fromList([0xf6, 0x10, 0x8c, 0xbe, 0xf4]));
-      await Future.delayed(const Duration(milliseconds: 250));
-      final Uint8List proMaxResponse = serialPort.read(7);
-      if (proMaxResponse.isEmpty) {
-        return false;
-      }
-      return true;
-    } catch (_) {
-      return false;
-    }
-  }
+      serialPort.write(Uint8List.fromList([0xf6, 0x1a, 0x8b, 0x3e, 0xf4]));
+      await Future.delayed(const Duration(milliseconds: 200));
+      final Uint8List response = serialPort.read(6);
 
-  Future<bool> _checkNewBoard(SerialPort serialPort) async {
-    try {
-      serialPort.openReadWrite();
-      await Future.delayed(const Duration(milliseconds: 250));
-      final Uint8List newBoardResponse = serialPort.read(7);
-      if (newBoardResponse.isEmpty) {
-        return false;
+      if (response[0] == 0xf1) {
+        goperPorts.add(GoperPort(serialPort, PortType.proMax));
+        return;
       }
-      return true;
-    } catch (_) {
-      return false;
+      if (response[0] == 0xaa) {
+        goperPorts.add(GoperPort(serialPort, PortType.newBoard));
+        return;
+      }
+      goperPorts.add(GoperPort(serialPort, PortType.unidentified));
+    } catch (e) {
+      goperPorts.add(GoperPort(serialPort, PortType.notAvailable));
+      return;
     }
   }
 
@@ -88,7 +65,7 @@ class _SerialScreenState extends State<SerialPrototypeScreen> {
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
-            onPressed: _validatePorts,
+            onPressed: _searchPorts,
           )
         ],
       ),
@@ -99,31 +76,49 @@ class _SerialScreenState extends State<SerialPrototypeScreen> {
               ? const Center(
                 child: CircularProgressIndicator())
               : SizedBox(
-            height: MediaQuery.of(context).size.height,
-            width: MediaQuery.of(context).size.width,
-            child: SingleChildScrollView(
+              height: MediaQuery.of(context).size.height,
+              width: MediaQuery.of(context).size.width,
+              child: SingleChildScrollView(
               child: Column(
-                children: List.generate(
-                  availablePorts.length,
-                      (index) {
-                    final port = availablePorts[index];
-                    return SizedBox(
-                      height: MediaQuery.of(context).size.height * 0.5,
-                      width: MediaQuery.of(context).size.width * 0.5,
-                      child: Column(
-                        children: [
-                          ElevatedButton(
-                            onPressed: () {},
-                            child: Text(port),
+                children: [
+                  Column(
+                    children: List.generate(
+                      goperPorts.length,
+                          (index) {
+                        final goperPort = goperPorts[index];
+                        return Text('${goperPort.port.name} '
+                            '-- ${goperPort.portType}');
+                      },
+                    ),
+                  ),
+                  Column(
+                    children: List.generate(
+                      goperPorts.length,
+                          (index) {
+                        final goperPort = goperPorts[index];
+                        if (goperPort.portType == PortType.unidentified
+                            || goperPort.portType == PortType.notAvailable) {
+                          return Container();
+                        }
+                        return SizedBox(
+                          height: MediaQuery.of(context).size.height * 0.5,
+                          width: MediaQuery.of(context).size.width * 0.5,
+                          child: Column(
+                            children: [
+                              ElevatedButton(
+                                onPressed: () {},
+                                child: Text(goperPort.port.name ?? ''),
+                              ),
+                              availablePorts[index].contains('S3')
+                                  ? NewBoardDetailsWidget(portName: goperPort.port)
+                                  : ProMaxDetailsScreen(portName: goperPort.port),
+                            ],
                           ),
-                          availablePorts[index].contains('S3')
-                              ? NewBoardDetailsWidget(portName: port)
-                              : ProMaxDetailsScreen(portName: port),
-                        ],
-                      ),
-                    );
-                  },
-                ),
+                        );
+                      },
+                    ),
+                  ),
+                ],
               ),
             ),
           );
@@ -132,3 +127,12 @@ class _SerialScreenState extends State<SerialPrototypeScreen> {
     );
   }
 }
+
+class GoperPort {
+  SerialPort port;
+  PortType portType;
+
+  GoperPort(this.port, this.portType);
+}
+
+enum PortType { newBoard, proMax, unidentified, notAvailable }

@@ -5,7 +5,7 @@ import 'package:flutter_libserialport/flutter_libserialport.dart';
 import '../constants/pro_max_commands.dart';
 
 class ProMaxDetailsScreen extends StatefulWidget {
-  final String portName;
+  final SerialPort portName;
   const ProMaxDetailsScreen({
     required this.portName,
     Key? key,
@@ -25,7 +25,7 @@ class _PortDetailsScreenState extends State<ProMaxDetailsScreen> {
   void initState() {
     super.initState();
 
-    port = SerialPort(widget.portName);
+    port = widget.portName;
 
     AppLifecycleListener(
       onInactive: () => port.close(),
