@@ -3,6 +3,10 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_libserialport/flutter_libserialport.dart';
 
+import '../constants/enums.dart';
+import '../constants/pro_max_protocol.dart';
+import '../constants/treadmill_values.dart';
+
 class NewBoardDetailsWidget extends StatefulWidget {
   final SerialPort portName;
   const NewBoardDetailsWidget({
@@ -64,7 +68,50 @@ class _PortDetailsScreenState extends State<NewBoardDetailsWidget> {
       setState(() {
         response = data.map((b) => b.toRadixString(16).padLeft(2, '0')).join(' ');
       });
+      _sendCommandToTreadmill(data);
     });
+  }
+
+  Future<void> _sendCommandToTreadmill(List<int> intResponse) async {
+    if (intResponse.isEmpty) return;
+    if (intResponse[0] == 0xaa && intResponse[1] == 0x00) return;
+
+    if (intResponse[0] == 0xaa && intResponse[1] == 0x01) {
+      double currentSpeed = TreadmillValues.instance.speed.value;
+      if (currentSpeed >= 22) return;
+      await RM6T6Protocol.sendCommand(
+        value: (currentSpeed * 10 + 1) / 10,
+        commandType: WriteCommandType.speed,
+        port: widget.portName
+      );
+    }
+    if (intResponse[0] == 0xaa && intResponse[1] == 0x02) {
+      double currentSpeed = TreadmillValues.instance.speed.value;
+      if (currentSpeed <= 0) return;
+      await RM6T6Protocol.sendCommand(
+          value: (currentSpeed * 10 - 1) / 10,
+          commandType: WriteCommandType.speed,
+          port: widget.portName
+      );
+    }
+    if (intResponse[0] == 0xaa && intResponse[1] == 0x04) {
+      int currentInclination = TreadmillValues.instance.inclination.value;
+      if (currentInclination >= 15) return;
+      await RM6T6Protocol.sendCommand(
+          value: currentInclination + 1,
+          commandType: WriteCommandType.inclination,
+          port: widget.portName
+      );
+    }
+    if (intResponse[0] == 0xaa && intResponse[1] == 0x08) {
+      int currentInclination = TreadmillValues.instance.inclination.value;
+      if (currentInclination <= 1) return;
+      await RM6T6Protocol.sendCommand(
+          value: currentInclination - 1,
+          commandType: WriteCommandType.inclination,
+          port: widget.portName
+      );
+    }
   }
 
   // ==========================================================

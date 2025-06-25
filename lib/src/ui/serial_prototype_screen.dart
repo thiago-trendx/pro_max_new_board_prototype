@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_libserialport/flutter_libserialport.dart';
+import 'package:pro_max_new_board_prototype/src/constants/treadmill_values.dart';
 import 'package:pro_max_new_board_prototype/src/ui/new_board_details_screen.dart';
 import 'package:pro_max_new_board_prototype/src/ui/pro_max_details_screen.dart';
 
@@ -128,6 +129,41 @@ class _SerialScreenState extends State<SerialPrototypeScreen> {
                           },
                         ),
                       ),
+                      const SizedBox(height: 10),
+                      const Divider(),
+                      const SizedBox(height: 20),
+                      const Text(
+                        'Treadmill Data:',
+                        style: TextStyle(
+                          fontSize: 18,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          ValueListenableBuilder(
+                            valueListenable: TreadmillValues.instance.speed,
+                            builder: (BuildContext context, double speed, Widget? child) {
+                              return Text(
+                                'SPEED: $speed',
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold, fontSize: 18),
+                              );
+                            },
+                          ),
+                          ValueListenableBuilder(
+                            valueListenable: TreadmillValues.instance.inclination,
+                            builder: (BuildContext context, int inclination, Widget? child) {
+                              return Text(
+                                'INCLINATION: $inclination',
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold, fontSize: 18),
+                              );
+                            },
+                          ),
+                        ],
+                      )
                     ],
                   ),
                 ),

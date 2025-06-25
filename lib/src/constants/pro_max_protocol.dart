@@ -1,5 +1,8 @@
 import 'dart:typed_data';
+
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_libserialport/flutter_libserialport.dart';
+import 'package:pro_max_new_board_prototype/src/constants/treadmill_values.dart';
 import 'enums.dart';
 import 'package:collection/collection.dart';
 
@@ -144,6 +147,23 @@ abstract class RM6T6Protocol {
       return true;
     } else {
       return false;
+    }
+  }
+
+  static Future<void> sendCommand({
+    required num value,
+    required WriteCommandType commandType,
+    required SerialPort port,
+  }) async {
+    List<int>? command = formatWriteRequisition(value: value, type: commandType);
+
+    port.write(Uint8List.fromList(command));
+    TreadmillValues.instance.setLastCommandSent(
+        command.map((b) => b.toRadixString(16).padLeft(2, '0')).join(' '));
+    if (commandType == WriteCommandType.speed) {
+      TreadmillValues.instance.setSpeed(value.toDouble());
+    } else {
+      TreadmillValues.instance.setInclination(value.toInt());
     }
   }
 }
