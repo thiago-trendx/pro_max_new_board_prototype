@@ -84,80 +84,114 @@ class _PortDetailsScreenState extends State<ProMaxDetailsScreen> {
       child: Center(
         child: Column(
           children: [
-            ElevatedButton(
-              onPressed: _initializePort,
-              child: const Text('Initialize Port'),
+            const SizedBox(height: 15),
+            Text(
+              '${widget.portName.name} Control Panel',
+              style: const TextStyle(
+                fontSize: 18,
+              ),
             ),
-            ElevatedButton(
-              onPressed: () => _sendData(TreadmillCommands.initialize),
-              child: const Text('Start'),
+            const SizedBox(height: 50),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ElevatedButton(
+                  onPressed: _initializePort,
+                  child: const Text('Initialize Port'),
+                ),
+                const SizedBox(width: 40),
+                ElevatedButton(
+                  onPressed: () => _sendData(TreadmillCommands.initialize),
+                  child: const Text('START'),
+                ),
+                const SizedBox(width: 40),
+                ElevatedButton(
+                  onPressed: () => _sendData(TreadmillCommands.stop0x00),
+                  child: const Text('STOP'),
+                ),
+                const SizedBox(width: 40),
+                ElevatedButton(
+                  onPressed: () => _sendData(TreadmillCommands.verifyError),
+                  child: const Text('Verify Error'),
+                ),
+              ],
             ),
-            ElevatedButton(
-              onPressed: () => _sendData(TreadmillCommands.verifyError),
-              child: const Text('Verify Error'),
+            const SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ElevatedButton(
+                  onPressed: () => _sendData(TreadmillCommands.speed1200hz),
+                  child: const Text('Speed 1200hz'),
+                ),
+                const SizedBox(width: 40),
+                ElevatedButton(
+                  onPressed: () => _sendData(TreadmillCommands.speed4000hz),
+                  child: const Text('Speed 4000hz'),
+                ),
+                const SizedBox(width: 40),
+                ElevatedButton(
+                  onPressed: () => _sendData(TreadmillCommands.speed6000hz),
+                  child: const Text('Speed 6000hz'),
+                ),
+              ],
             ),
-            ElevatedButton(
-              onPressed: () => _sendData(TreadmillCommands.stop0xff),
-              child: const Text('Stop 0xff'),
+            const SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ElevatedButton(
+                  onPressed: () => _sendData(TreadmillCommands.inclination1),
+                  child: const Text('Inclination 1'),
+                ),
+                const SizedBox(width: 40),
+                ElevatedButton(
+                  onPressed: () => _sendData(TreadmillCommands.speed4000hz),
+                  child: const Text('Speed 4000hz'),
+                ),
+                const SizedBox(width: 40),
+                ElevatedButton(
+                  onPressed: () => _sendData(TreadmillCommands.inclination4),
+                  child: const Text('Inclination 4'),
+                ),
+              ],
             ),
-            ElevatedButton(
-              onPressed: () => _sendData(TreadmillCommands.stop0x00),
-              child: const Text('Stop 0x00'),
-            ),
-            ElevatedButton(
-              onPressed: () => _sendData(TreadmillCommands.speed1200hz),
-              child: const Text('Speed 1200hz'),
-            ),
-            ElevatedButton(
-              onPressed: () => _sendData(TreadmillCommands.speed4000hz),
-              child: const Text('Speed 4000hz'),
-            ),
-            ElevatedButton(
-              onPressed: () => _sendData(TreadmillCommands.speed6000hz),
-              child: const Text('Speed 6000hz'),
-            ),
-            ElevatedButton(
-              onPressed: () => _sendData(TreadmillCommands.inclination1),
-              child: const Text('Inclination 1'),
-            ),
-            ElevatedButton(
-              onPressed: () => _sendData(TreadmillCommands.inclination4),
-              child: const Text('Inclination 4'),
-            ),
-            const SizedBox(height: 100),
+            const SizedBox(height: 50),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 Column(
                   children: [
                     const Text(
-                      'ULTIMO COMANDO:',
+                      'LAST COMMAND:',
                       style: TextStyle(
-                          fontWeight: FontWeight.bold, fontSize: 20),
+                          fontWeight: FontWeight.bold, fontSize: 18),
                     ),
                     Text(
                       lastCommandSent ?? '',
                       style: const TextStyle(
-                          fontWeight: FontWeight.bold, fontSize: 20),
+                          fontWeight: FontWeight.bold, fontSize: 18),
                     ),
                   ],
                 ),
                 Column(
                   children: [
                     const Text(
-                      'RESPOSTA:',
+                      'LAST RESPONSE:',
                       style: TextStyle(
-                          fontWeight: FontWeight.bold, fontSize: 20),
+                          fontWeight: FontWeight.bold, fontSize: 18),
                     ),
                     Text(
                       '$response',
                       style: const TextStyle(
-                          fontWeight: FontWeight.bold, fontSize: 20),
+                          fontWeight: FontWeight.bold, fontSize: 18),
                     ),
                   ],
                 ),
               ],
             ),
+            const SizedBox(height: 15),
+            const Divider(),
           ],
         ),
       ),

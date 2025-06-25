@@ -76,40 +76,30 @@ class _PortDetailsScreenState extends State<NewBoardDetailsWidget> {
       child: Center(
         child: Column(
           children: [
+            const SizedBox(height: 15),
+            Text(
+              '${widget.portName.name} Control Panel',
+              style: const TextStyle(
+                fontSize: 18,
+              ),
+            ),
+            const SizedBox(height: 50),
             ElevatedButton(
               onPressed: _initializePort,
               child: const Text('Initialize Port'),
             ),
-            // ElevatedButton(
-            //   onPressed: () => _sendData(),
-            //   child: const Text('Start'),
-            // ),
-            const SizedBox(height: 100),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
+            const SizedBox(height: 50),
+            Column(
               children: [
-                const Column(
-                  children: [
-                    Text(
-                      'ULTIMO COMANDO:',
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold, fontSize: 20),
-                    ),
-                  ],
+                const Text(
+                  'CURRENT VALUE:',
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold, fontSize: 18),
                 ),
-                Column(
-                  children: [
-                    const Text(
-                      'RESPOSTA:',
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold, fontSize: 20),
-                    ),
-                    Text(
-                      '$response',
-                      style: const TextStyle(
-                          fontWeight: FontWeight.bold, fontSize: 20),
-                    ),
-                  ],
+                Text(
+                  '$response',
+                  style: const TextStyle(
+                      fontWeight: FontWeight.bold, fontSize: 18),
                 ),
               ],
             ),

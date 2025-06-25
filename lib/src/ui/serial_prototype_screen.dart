@@ -28,7 +28,6 @@ class _SerialScreenState extends State<SerialPrototypeScreen> {
     for (var port in SerialPort.availablePorts) {
       final SerialPort serialPort = SerialPort(port);
       await _validatePort(serialPort);
-      // await _initialOne(serialPort);
       serialPort.close();
     }
     isLoading.value = false;
@@ -78,49 +77,61 @@ class _SerialScreenState extends State<SerialPrototypeScreen> {
               : SizedBox(
               height: MediaQuery.of(context).size.height,
               width: MediaQuery.of(context).size.width,
-              child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  Column(
-                    children: List.generate(
-                      goperPorts.length,
-                          (index) {
-                        final goperPort = goperPorts[index];
-                        return Text('${goperPort.port.name} '
-                            '-- ${goperPort.portType}');
-                      },
-                    ),
-                  ),
-                  Column(
-                    children: List.generate(
-                      goperPorts.length,
-                          (index) {
-                        final goperPort = goperPorts[index];
-                        if (goperPort.portType == PortType.unidentified
-                            || goperPort.portType == PortType.notAvailable) {
-                          return Container();
-                        }
-                        return SizedBox(
-                          height: MediaQuery.of(context).size.height * 0.5,
-                          width: MediaQuery.of(context).size.width * 0.5,
-                          child: Column(
-                            children: [
-                              ElevatedButton(
-                                onPressed: () {},
-                                child: Text(goperPort.port.name ?? ''),
-                              ),
-                              availablePorts[index].contains('S3')
-                                  ? NewBoardDetailsWidget(portName: goperPort.port)
-                                  : ProMaxDetailsScreen(portName: goperPort.port),
-                            ],
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      const Text(
+                          'PORTS DETECTED:',
+                          textAlign: TextAlign.start,
+                          style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold
                           ),
-                        );
-                      },
-                    ),
+                      ),
+                      Column(
+                        children: List.generate(
+                          goperPorts.length,
+                              (index) {
+                            final goperPort = goperPorts[index];
+                            return Text(
+                                '${goperPort.port.name} '
+                                '-- ${goperPort.portType.portTypeText}',
+                              style: TextStyle(
+                                fontWeight: goperPort.portType == PortType.proMax ||
+                                    goperPort.portType == PortType.newBoard
+                                      ? FontWeight.bold
+                                      : FontWeight.normal,
+                                  color: goperPort.portType == PortType.notAvailable ||
+                                    goperPort.portType == PortType.unidentified
+                                      ? Colors.red
+                                      : Colors.black
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                      const Divider(),
+                      Column(
+                        children: List.generate(
+                          goperPorts.length,
+                              (index) {
+                            final goperPort = goperPorts[index];
+                            if (goperPort.portType == PortType.unidentified
+                                || goperPort.portType == PortType.notAvailable) {
+                              return Container();
+                            }
+                            return goperPort.portType == PortType.newBoard
+                                ? NewBoardDetailsWidget(portName: goperPort.port)
+                                : ProMaxDetailsScreen(portName: goperPort.port);
+                          },
+                        ),
+                      ),
+                    ],
                   ),
-                ],
+                ),
               ),
-            ),
           );
         },
       ),
@@ -136,3 +147,18 @@ class GoperPort {
 }
 
 enum PortType { newBoard, proMax, unidentified, notAvailable }
+
+extension PortTypeExtension on PortType {
+  String get portTypeText {
+    switch (this) {
+      case PortType.newBoard:
+        return 'Keyboard button board';
+      case PortType.proMax:
+        return 'Pro Max treadmill board';
+      case PortType.unidentified:
+        return 'Unidentified';
+      case PortType.notAvailable:
+        return 'Not available';
+    }
+  }
+}
