@@ -2,23 +2,23 @@ import 'dart:async';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_libserialport/flutter_libserialport.dart';
+import '../constants/pro_max_commands.dart';
 
-class PortDetailsScreen extends StatefulWidget {
+class ProMaxDetailsScreen extends StatefulWidget {
   final String portName;
-  const PortDetailsScreen({
+  const ProMaxDetailsScreen({
     required this.portName,
     Key? key,
   }) : super(key: key);
 
   @override
-  State<PortDetailsScreen> createState() => _PortDetailsScreenState();
+  State<ProMaxDetailsScreen> createState() => _PortDetailsScreenState();
 }
 
-class _PortDetailsScreenState extends State<PortDetailsScreen> {
+class _PortDetailsScreenState extends State<ProMaxDetailsScreen> {
   String? response;
-
+  String? lastCommandSent;
   late final SerialPort port;
-
   StreamSubscription<Uint8List>? subscription;
 
   @override
@@ -58,7 +58,7 @@ class _PortDetailsScreenState extends State<PortDetailsScreen> {
   }
 
   void _listenToPort() {
-    SerialPortReader reader = SerialPortReader(port, timeout: 20);
+    SerialPortReader reader = SerialPortReader(port);
 
     subscription = reader.stream.listen((data) {
       setState(() {
@@ -68,6 +68,14 @@ class _PortDetailsScreenState extends State<PortDetailsScreen> {
   }
 
   // ==========================================================
+
+  void _sendData(Uint8List data) {
+    port.write(data);
+
+    setState(() {
+      lastCommandSent = data.map((b) => b.toRadixString(16).padLeft(2, '0')).join(' ');
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -82,19 +90,56 @@ class _PortDetailsScreenState extends State<PortDetailsScreen> {
                 onPressed: _initializePort,
                 child: const Text('Initialize Port'),
               ),
-              // ElevatedButton(
-              //   onPressed: () => _sendData(),
-              //   child: const Text('Start'),
-              // ),
+              ElevatedButton(
+                onPressed: () => _sendData(TreadmillCommands.initialize),
+                child: const Text('Start'),
+              ),
+              ElevatedButton(
+                onPressed: () => _sendData(TreadmillCommands.verifyError),
+                child: const Text('Verify Error'),
+              ),
+              ElevatedButton(
+                onPressed: () => _sendData(TreadmillCommands.stop0xff),
+                child: const Text('Stop 0xff'),
+              ),
+              ElevatedButton(
+                onPressed: () => _sendData(TreadmillCommands.stop0x00),
+                child: const Text('Stop 0x00'),
+              ),
+              ElevatedButton(
+                onPressed: () => _sendData(TreadmillCommands.speed1200hz),
+                child: const Text('Speed 1200hz'),
+              ),
+              ElevatedButton(
+                onPressed: () => _sendData(TreadmillCommands.speed4000hz),
+                child: const Text('Speed 4000hz'),
+              ),
+              ElevatedButton(
+                onPressed: () => _sendData(TreadmillCommands.speed6000hz),
+                child: const Text('Speed 6000hz'),
+              ),
+              ElevatedButton(
+                onPressed: () => _sendData(TreadmillCommands.inclination1),
+                child: const Text('Inclination 1'),
+              ),
+              ElevatedButton(
+                onPressed: () => _sendData(TreadmillCommands.inclination4),
+                child: const Text('Inclination 4'),
+              ),
               const SizedBox(height: 100),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  const Column(
+                  Column(
                     children: [
-                      Text(
+                      const Text(
                         'ULTIMO COMANDO:',
                         style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 20),
+                      ),
+                      Text(
+                        lastCommandSent ?? '',
+                        style: const TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 20),
                       ),
                     ],
