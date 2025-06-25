@@ -13,6 +13,7 @@ class SerialPrototypeScreen extends StatefulWidget {
 
 class _SerialScreenState extends State<SerialPrototypeScreen> {
   List<String> availablePorts = SerialPort.availablePorts;
+  ValueNotifier<bool> isLoading = ValueNotifier(true);
 
   @override
   void initState() {
@@ -21,6 +22,7 @@ class _SerialScreenState extends State<SerialPrototypeScreen> {
   }
 
   void _validatePorts() async {
+    isLoading.value = true;
     availablePorts = SerialPort.availablePorts;
 
     print('Available ports: ${SerialPort.availablePorts}');
@@ -45,6 +47,7 @@ class _SerialScreenState extends State<SerialPrototypeScreen> {
       }
     }
 
+    isLoading.value = false;
     setState(() {});
   }
 
@@ -89,34 +92,42 @@ class _SerialScreenState extends State<SerialPrototypeScreen> {
           )
         ],
       ),
-      body: SizedBox(
-        height: MediaQuery.of(context).size.height,
-        width: MediaQuery.of(context).size.width,
-        child: SingleChildScrollView(
-          child: Column(
-            children: List.generate(
-              availablePorts.length,
-                  (index) {
-                final port = availablePorts[index];
-                return SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.5,
-                  width: MediaQuery.of(context).size.width * 0.5,
-                  child: Column(
-                    children: [
-                      ElevatedButton(
-                        onPressed: () {},
-                        child: Text(port),
+      body: ValueListenableBuilder(
+        valueListenable: isLoading,
+        builder: (BuildContext context, bool isLoading, Widget? child) {
+          return isLoading
+              ? const Center(
+                child: CircularProgressIndicator())
+              : SizedBox(
+            height: MediaQuery.of(context).size.height,
+            width: MediaQuery.of(context).size.width,
+            child: SingleChildScrollView(
+              child: Column(
+                children: List.generate(
+                  availablePorts.length,
+                      (index) {
+                    final port = availablePorts[index];
+                    return SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.5,
+                      width: MediaQuery.of(context).size.width * 0.5,
+                      child: Column(
+                        children: [
+                          ElevatedButton(
+                            onPressed: () {},
+                            child: Text(port),
+                          ),
+                          availablePorts[index].contains('S3')
+                              ? NewBoardDetailsWidget(portName: port)
+                              : ProMaxDetailsScreen(portName: port),
+                        ],
                       ),
-                      availablePorts[index].contains('S3')
-                          ? NewBoardDetailsWidget(portName: port)
-                          : ProMaxDetailsScreen(portName: port),
-                    ],
-                  ),
-                );
-              },
+                    );
+                  },
+                ),
+              ),
             ),
-          ),
-        ),
+          );
+        },
       ),
     );
   }
