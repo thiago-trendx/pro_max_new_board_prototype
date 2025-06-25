@@ -4,14 +4,14 @@ import 'package:flutter_libserialport/flutter_libserialport.dart';
 import 'package:pro_max_new_board_prototype/src/ui/new_board_details_screen.dart';
 import 'package:pro_max_new_board_prototype/src/ui/pro_max_details_screen.dart';
 
-class ProMaxNewBoardScreen extends StatefulWidget {
-  const ProMaxNewBoardScreen({Key? key}) : super(key: key);
+class SerialPrototypeScreen extends StatefulWidget {
+  const SerialPrototypeScreen({Key? key}) : super(key: key);
 
   @override
-  State<ProMaxNewBoardScreen> createState() => _SerialScreenState();
+  State<SerialPrototypeScreen> createState() => _SerialScreenState();
 }
 
-class _SerialScreenState extends State<ProMaxNewBoardScreen> {
+class _SerialScreenState extends State<SerialPrototypeScreen> {
   List<String> availablePorts = SerialPort.availablePorts;
 
   @override
@@ -90,24 +90,31 @@ class _SerialScreenState extends State<ProMaxNewBoardScreen> {
         ],
       ),
       body: SizedBox(
-        width: double.infinity,
-        child: Column(
-          children: List.generate(
-            availablePorts.length,
-                (index) {
-              final port = availablePorts[index];
-              return ElevatedButton(
-                onPressed: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => availablePorts[index].contains('S3')
-                        ? NewBoardDetailsScreen(portName: port)
-                        : ProMaxDetailsScreen(portName: port),
+        height: MediaQuery.of(context).size.height,
+        width: MediaQuery.of(context).size.width,
+        child: SingleChildScrollView(
+          child: Column(
+            children: List.generate(
+              availablePorts.length,
+                  (index) {
+                final port = availablePorts[index];
+                return SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.5,
+                  width: MediaQuery.of(context).size.width * 0.5,
+                  child: Column(
+                    children: [
+                      ElevatedButton(
+                        onPressed: () {},
+                        child: Text(port),
+                      ),
+                      availablePorts[index].contains('S3')
+                          ? NewBoardDetailsWidget(portName: port)
+                          : ProMaxDetailsScreen(portName: port),
+                    ],
                   ),
-                ),
-                child: Text(port),
-              );
-            },
+                );
+              },
+            ),
           ),
         ),
       ),

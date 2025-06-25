@@ -3,18 +3,18 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_libserialport/flutter_libserialport.dart';
 
-class NewBoardDetailsScreen extends StatefulWidget {
+class NewBoardDetailsWidget extends StatefulWidget {
   final String portName;
-  const NewBoardDetailsScreen({
+  const NewBoardDetailsWidget({
     required this.portName,
     Key? key,
   }) : super(key: key);
 
   @override
-  State<NewBoardDetailsScreen> createState() => _PortDetailsScreenState();
+  State<NewBoardDetailsWidget> createState() => _PortDetailsScreenState();
 }
 
-class _PortDetailsScreenState extends State<NewBoardDetailsScreen> {
+class _PortDetailsScreenState extends State<NewBoardDetailsWidget> {
   String? response;
 
   late final SerialPort port;
@@ -71,52 +71,49 @@ class _PortDetailsScreenState extends State<NewBoardDetailsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text(port.name ?? 'Unknown')),
-      body: SizedBox(
-        width: double.infinity,
-        child: Center(
-          child: Column(
-            children: [
-              ElevatedButton(
-                onPressed: _initializePort,
-                child: const Text('Initialize Port'),
-              ),
-              // ElevatedButton(
-              //   onPressed: () => _sendData(),
-              //   child: const Text('Start'),
-              // ),
-              const SizedBox(height: 100),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  const Column(
-                    children: [
-                      Text(
-                        'ULTIMO COMANDO:',
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 20),
-                      ),
-                    ],
-                  ),
-                  Column(
-                    children: [
-                      const Text(
-                        'RESPOSTA:',
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 20),
-                      ),
-                      Text(
-                        '$response',
-                        style: const TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 20),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ],
-          ),
+    return SizedBox(
+      width: double.infinity,
+      child: Center(
+        child: Column(
+          children: [
+            ElevatedButton(
+              onPressed: _initializePort,
+              child: const Text('Initialize Port'),
+            ),
+            // ElevatedButton(
+            //   onPressed: () => _sendData(),
+            //   child: const Text('Start'),
+            // ),
+            const SizedBox(height: 100),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                const Column(
+                  children: [
+                    Text(
+                      'ULTIMO COMANDO:',
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold, fontSize: 20),
+                    ),
+                  ],
+                ),
+                Column(
+                  children: [
+                    const Text(
+                      'RESPOSTA:',
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold, fontSize: 20),
+                    ),
+                    Text(
+                      '$response',
+                      style: const TextStyle(
+                          fontWeight: FontWeight.bold, fontSize: 20),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ],
         ),
       ),
     );

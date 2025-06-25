@@ -79,89 +79,86 @@ class _PortDetailsScreenState extends State<ProMaxDetailsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text(port.name ?? 'Unknown')),
-      body: SizedBox(
-        width: double.infinity,
-        child: Center(
-          child: Column(
-            children: [
-              ElevatedButton(
-                onPressed: _initializePort,
-                child: const Text('Initialize Port'),
-              ),
-              ElevatedButton(
-                onPressed: () => _sendData(TreadmillCommands.initialize),
-                child: const Text('Start'),
-              ),
-              ElevatedButton(
-                onPressed: () => _sendData(TreadmillCommands.verifyError),
-                child: const Text('Verify Error'),
-              ),
-              ElevatedButton(
-                onPressed: () => _sendData(TreadmillCommands.stop0xff),
-                child: const Text('Stop 0xff'),
-              ),
-              ElevatedButton(
-                onPressed: () => _sendData(TreadmillCommands.stop0x00),
-                child: const Text('Stop 0x00'),
-              ),
-              ElevatedButton(
-                onPressed: () => _sendData(TreadmillCommands.speed1200hz),
-                child: const Text('Speed 1200hz'),
-              ),
-              ElevatedButton(
-                onPressed: () => _sendData(TreadmillCommands.speed4000hz),
-                child: const Text('Speed 4000hz'),
-              ),
-              ElevatedButton(
-                onPressed: () => _sendData(TreadmillCommands.speed6000hz),
-                child: const Text('Speed 6000hz'),
-              ),
-              ElevatedButton(
-                onPressed: () => _sendData(TreadmillCommands.inclination1),
-                child: const Text('Inclination 1'),
-              ),
-              ElevatedButton(
-                onPressed: () => _sendData(TreadmillCommands.inclination4),
-                child: const Text('Inclination 4'),
-              ),
-              const SizedBox(height: 100),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  Column(
-                    children: [
-                      const Text(
-                        'ULTIMO COMANDO:',
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 20),
-                      ),
-                      Text(
-                        lastCommandSent ?? '',
-                        style: const TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 20),
-                      ),
-                    ],
-                  ),
-                  Column(
-                    children: [
-                      const Text(
-                        'RESPOSTA:',
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 20),
-                      ),
-                      Text(
-                        '$response',
-                        style: const TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 20),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ],
-          ),
+    return SizedBox(
+      width: double.infinity,
+      child: Center(
+        child: Column(
+          children: [
+            ElevatedButton(
+              onPressed: _initializePort,
+              child: const Text('Initialize Port'),
+            ),
+            ElevatedButton(
+              onPressed: () => _sendData(TreadmillCommands.initialize),
+              child: const Text('Start'),
+            ),
+            ElevatedButton(
+              onPressed: () => _sendData(TreadmillCommands.verifyError),
+              child: const Text('Verify Error'),
+            ),
+            ElevatedButton(
+              onPressed: () => _sendData(TreadmillCommands.stop0xff),
+              child: const Text('Stop 0xff'),
+            ),
+            ElevatedButton(
+              onPressed: () => _sendData(TreadmillCommands.stop0x00),
+              child: const Text('Stop 0x00'),
+            ),
+            ElevatedButton(
+              onPressed: () => _sendData(TreadmillCommands.speed1200hz),
+              child: const Text('Speed 1200hz'),
+            ),
+            ElevatedButton(
+              onPressed: () => _sendData(TreadmillCommands.speed4000hz),
+              child: const Text('Speed 4000hz'),
+            ),
+            ElevatedButton(
+              onPressed: () => _sendData(TreadmillCommands.speed6000hz),
+              child: const Text('Speed 6000hz'),
+            ),
+            ElevatedButton(
+              onPressed: () => _sendData(TreadmillCommands.inclination1),
+              child: const Text('Inclination 1'),
+            ),
+            ElevatedButton(
+              onPressed: () => _sendData(TreadmillCommands.inclination4),
+              child: const Text('Inclination 4'),
+            ),
+            const SizedBox(height: 100),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                Column(
+                  children: [
+                    const Text(
+                      'ULTIMO COMANDO:',
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold, fontSize: 20),
+                    ),
+                    Text(
+                      lastCommandSent ?? '',
+                      style: const TextStyle(
+                          fontWeight: FontWeight.bold, fontSize: 20),
+                    ),
+                  ],
+                ),
+                Column(
+                  children: [
+                    const Text(
+                      'RESPOSTA:',
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold, fontSize: 20),
+                    ),
+                    Text(
+                      '$response',
+                      style: const TextStyle(
+                          fontWeight: FontWeight.bold, fontSize: 20),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ],
         ),
       ),
     );
