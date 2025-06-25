@@ -2,7 +2,9 @@ import 'dart:async';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_libserialport/flutter_libserialport.dart';
+import '../constants/enums.dart';
 import '../constants/pro_max_commands.dart';
+import '../constants/pro_max_protocol.dart';
 
 class ProMaxDetailsScreen extends StatefulWidget {
   final SerialPort portName;
@@ -69,14 +71,6 @@ class _PortDetailsScreenState extends State<ProMaxDetailsScreen> {
 
   // ==========================================================
 
-  void _sendData(Uint8List data) {
-    port.write(data);
-
-    setState(() {
-      lastCommandSent = data.map((b) => b.toRadixString(16).padLeft(2, '0')).join(' ');
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -84,14 +78,14 @@ class _PortDetailsScreenState extends State<ProMaxDetailsScreen> {
       child: Center(
         child: Column(
           children: [
-            const SizedBox(height: 15),
+            const SizedBox(height: 10),
             Text(
               '${widget.portName.name} Control Panel',
               style: const TextStyle(
                 fontSize: 18,
               ),
             ),
-            const SizedBox(height: 50),
+            const SizedBox(height: 30),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -101,62 +95,168 @@ class _PortDetailsScreenState extends State<ProMaxDetailsScreen> {
                 ),
                 const SizedBox(width: 40),
                 ElevatedButton(
-                  onPressed: () => _sendData(TreadmillCommands.initialize),
+                  onPressed: () => _reservedCommand(TreadmillCommands.initialize),
                   child: const Text('START'),
                 ),
                 const SizedBox(width: 40),
                 ElevatedButton(
-                  onPressed: () => _sendData(TreadmillCommands.stop0x00),
+                  onPressed: () => _reservedCommand(TreadmillCommands.stop0x00),
                   child: const Text('STOP'),
                 ),
                 const SizedBox(width: 40),
                 ElevatedButton(
-                  onPressed: () => _sendData(TreadmillCommands.verifyError),
+                  onPressed: () => _reservedCommand(TreadmillCommands.verifyError),
                   child: const Text('Verify Error'),
                 ),
               ],
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 15),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 ElevatedButton(
-                  onPressed: () => _sendData(TreadmillCommands.speed1200hz),
-                  child: const Text('Speed 1200hz'),
+                  onPressed: () => _sendCommand(
+                      value: 1, commandType: WriteCommandType.speed
+                  ),
+                  child: const Text('Speed 01'),
                 ),
                 const SizedBox(width: 40),
                 ElevatedButton(
-                  onPressed: () => _sendData(TreadmillCommands.speed4000hz),
-                  child: const Text('Speed 4000hz'),
+                  onPressed: () => _sendCommand(
+                    value: 2, commandType: WriteCommandType.speed
+                  ),
+                  child: const Text('Speed 02'),
                 ),
                 const SizedBox(width: 40),
                 ElevatedButton(
-                  onPressed: () => _sendData(TreadmillCommands.speed6000hz),
-                  child: const Text('Speed 6000hz'),
+                  onPressed: () => _sendCommand(
+                      value: 3, commandType: WriteCommandType.speed
+                  ),
+                  child: const Text('Speed 03'),
+                ),
+                const SizedBox(width: 40),
+                ElevatedButton(
+                  onPressed: () => _sendCommand(
+                      value: 4, commandType: WriteCommandType.speed
+                  ),
+                  child: const Text('Speed 04'),
+                ),
+                const SizedBox(width: 40),
+                ElevatedButton(
+                  onPressed: () => _sendCommand(
+                      value: 5, commandType: WriteCommandType.speed
+                  ),
+                  child: const Text('Speed 05'),
                 ),
               ],
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 15),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 ElevatedButton(
-                  onPressed: () => _sendData(TreadmillCommands.inclination1),
-                  child: const Text('Inclination 1'),
+                  onPressed: () => _sendCommand(
+                    value: 6, commandType: WriteCommandType.speed
+                  ),
+                  child: const Text('Speed 06'),
                 ),
                 const SizedBox(width: 40),
                 ElevatedButton(
-                  onPressed: () => _sendData(TreadmillCommands.speed4000hz),
-                  child: const Text('Speed 4000hz'),
+                  onPressed: () => _sendCommand(
+                    value: 7, commandType: WriteCommandType.speed
+                  ),
+                  child: const Text('Speed 07'),
                 ),
                 const SizedBox(width: 40),
                 ElevatedButton(
-                  onPressed: () => _sendData(TreadmillCommands.inclination4),
-                  child: const Text('Inclination 4'),
+                  onPressed: () => _sendCommand(
+                    value: 8, commandType: WriteCommandType.speed
+                  ),
+                  child: const Text('Speed 08'),
+                ),
+                const SizedBox(width: 40),
+                ElevatedButton(
+                  onPressed: () => _sendCommand(
+                    value: 9, commandType: WriteCommandType.speed
+                  ),
+                  child: const Text('Speed 09'),
+                ),
+                const SizedBox(width: 40),
+                ElevatedButton(
+                  onPressed: () => _sendCommand(
+                    value: 10, commandType: WriteCommandType.speed
+                  ),
+                  child: const Text('Speed 10'),
                 ),
               ],
             ),
-            const SizedBox(height: 50),
+            const SizedBox(height: 15),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ElevatedButton(
+                  onPressed: () => _sendCommand(
+                    value: 1, commandType: WriteCommandType.inclination
+                  ),
+                  child: const Text('Inclination 01'),
+                ),
+                const SizedBox(width: 40),
+                ElevatedButton(
+                  onPressed: () => _sendCommand(
+                    value: 2, commandType: WriteCommandType.inclination
+                  ),
+                  child: const Text('Inclination 02'),
+                ),
+                const SizedBox(width: 40),
+                ElevatedButton(
+                  onPressed: () => _sendCommand(
+                    value: 3, commandType: WriteCommandType.inclination
+                  ),
+                  child: const Text('Inclination 03'),
+                ),
+                const SizedBox(width: 40),
+                ElevatedButton(
+                  onPressed: () => _sendCommand(
+                    value: 4, commandType: WriteCommandType.inclination
+                  ),
+                  child: const Text('Inclination 04'),
+                ),
+              ],
+            ),
+            const SizedBox(height: 15),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ElevatedButton(
+                  onPressed: () => _sendCommand(
+                    value: 5, commandType: WriteCommandType.inclination
+                  ),
+                  child: const Text('Inclination 05'),
+                ),
+                const SizedBox(width: 40),
+                ElevatedButton(
+                  onPressed: () => _sendCommand(
+                    value: 6, commandType: WriteCommandType.inclination
+                  ),
+                  child: const Text('Inclination 06'),
+                ),
+                const SizedBox(width: 40),
+                ElevatedButton(
+                  onPressed: () => _sendCommand(
+                    value: 7, commandType: WriteCommandType.inclination
+                  ),
+                  child: const Text('Inclination 07'),
+                ),
+                const SizedBox(width: 40),
+                ElevatedButton(
+                  onPressed: () => _sendCommand(
+                    value: 8, commandType: WriteCommandType.inclination
+                  ),
+                  child: const Text('Inclination 08'),
+                ),
+              ],
+            ),
+            const SizedBox(height: 30),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
@@ -190,11 +290,31 @@ class _PortDetailsScreenState extends State<ProMaxDetailsScreen> {
                 ),
               ],
             ),
-            const SizedBox(height: 15),
+            const SizedBox(height: 10),
             const Divider(),
           ],
         ),
       ),
     );
+  }
+
+  Future<void> _sendCommand({
+    required int value, 
+    required WriteCommandType commandType
+  }) async {
+    List<int>? command = RM6T6Protocol
+        .formatWriteRequisition(value: value, type: commandType);
+    
+    port.write(Uint8List.fromList(command));
+    setState(() {
+      lastCommandSent = command.map((b) => b.toRadixString(16).padLeft(2, '0')).join(' ');
+    });
+  }
+
+  Future<void> _reservedCommand(command) async {
+    port.write(Uint8List.fromList(command));
+    setState(() {
+      lastCommandSent = command.map((b) => b.toRadixString(16).padLeft(2, '0')).join(' ');
+    });
   }
 }

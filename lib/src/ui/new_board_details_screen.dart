@@ -83,12 +83,12 @@ class _PortDetailsScreenState extends State<NewBoardDetailsWidget> {
                 fontSize: 18,
               ),
             ),
-            const SizedBox(height: 50),
+            const SizedBox(height: 30),
             ElevatedButton(
               onPressed: _initializePort,
               child: const Text('Initialize Port'),
             ),
-            const SizedBox(height: 50),
+            const SizedBox(height: 30),
             Column(
               children: [
                 const Text(
