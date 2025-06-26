@@ -153,11 +153,11 @@ abstract class RM6T6Protocol {
   static Future<void> sendCommand({
     required num value,
     required WriteCommandType commandType,
-    required SerialPort port,
   }) async {
+    if (TreadmillValues.instance.proMaxSerialPort.value == null) return;
     List<int>? command = formatWriteRequisition(value: value, type: commandType);
 
-    port.write(Uint8List.fromList(command));
+    TreadmillValues.instance.proMaxSerialPort.value!.write(Uint8List.fromList(command));
     TreadmillValues.instance.setLastCommandSent(
         command.map((b) => b.toRadixString(16).padLeft(2, '0')).join(' '));
     if (commandType == WriteCommandType.speed) {

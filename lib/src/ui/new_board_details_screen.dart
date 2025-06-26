@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:typed_data';
+import 'package:easy_debounce/easy_throttle.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_libserialport/flutter_libserialport.dart';
 
@@ -8,9 +9,9 @@ import '../constants/pro_max_protocol.dart';
 import '../constants/treadmill_values.dart';
 
 class NewBoardDetailsWidget extends StatefulWidget {
-  final SerialPort portName;
+  final SerialPort newBoardPort;
   const NewBoardDetailsWidget({
-    required this.portName,
+    required this.newBoardPort,
     Key? key,
   }) : super(key: key);
 
@@ -29,7 +30,7 @@ class _PortDetailsScreenState extends State<NewBoardDetailsWidget> {
   void initState() {
     super.initState();
 
-    port = widget.portName;
+    port = widget.newBoardPort;
 
     AppLifecycleListener(
       onInactive: () => port.close(),
@@ -68,7 +69,11 @@ class _PortDetailsScreenState extends State<NewBoardDetailsWidget> {
       setState(() {
         response = data.map((b) => b.toRadixString(16).padLeft(2, '0')).join(' ');
       });
-      _sendCommandToTreadmill(data);
+      EasyThrottle.throttle(
+        'command-throttler',
+        const Duration(milliseconds: 100),
+            () async => await _sendCommandToTreadmill(data)
+      );
     });
   }
 
@@ -82,7 +87,6 @@ class _PortDetailsScreenState extends State<NewBoardDetailsWidget> {
       await RM6T6Protocol.sendCommand(
         value: (currentSpeed * 10 + 1) / 10,
         commandType: WriteCommandType.speed,
-        port: widget.portName
       );
     }
     if (intResponse[0] == 0xaa && intResponse[1] == 0x02) {
@@ -91,7 +95,6 @@ class _PortDetailsScreenState extends State<NewBoardDetailsWidget> {
       await RM6T6Protocol.sendCommand(
           value: (currentSpeed * 10 - 1) / 10,
           commandType: WriteCommandType.speed,
-          port: widget.portName
       );
     }
     if (intResponse[0] == 0xaa && intResponse[1] == 0x04) {
@@ -100,7 +103,6 @@ class _PortDetailsScreenState extends State<NewBoardDetailsWidget> {
       await RM6T6Protocol.sendCommand(
           value: currentInclination + 1,
           commandType: WriteCommandType.inclination,
-          port: widget.portName
       );
     }
     if (intResponse[0] == 0xaa && intResponse[1] == 0x08) {
@@ -109,7 +111,6 @@ class _PortDetailsScreenState extends State<NewBoardDetailsWidget> {
       await RM6T6Protocol.sendCommand(
           value: currentInclination - 1,
           commandType: WriteCommandType.inclination,
-          port: widget.portName
       );
     }
   }
@@ -125,7 +126,7 @@ class _PortDetailsScreenState extends State<NewBoardDetailsWidget> {
           children: [
             const SizedBox(height: 15),
             Text(
-              '${widget.portName.name} Control Panel',
+              '${widget.newBoardPort.name} Control Panel',
               style: const TextStyle(
                 fontSize: 18,
               ),

@@ -123,9 +123,14 @@ class _SerialScreenState extends State<SerialPrototypeScreen> {
                                 || goperPort.portType == PortType.notAvailable) {
                               return Container();
                             }
-                            return goperPort.portType == PortType.newBoard
-                                ? NewBoardDetailsWidget(portName: goperPort.port)
-                                : ProMaxDetailsScreen(portName: goperPort.port);
+                            if (goperPort.portType == PortType.newBoard) {
+                              return NewBoardDetailsWidget(
+                                  newBoardPort: goperPort.port,
+                              );
+                            }
+                            TreadmillValues.instance.setProMaxSerialPort(goperPort.port);
+                            return ProMaxDetailsScreen(
+                                portName: TreadmillValues.instance.proMaxSerialPort.value!);
                           },
                         ),
                       ),
