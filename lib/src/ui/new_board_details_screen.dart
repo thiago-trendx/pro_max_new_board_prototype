@@ -81,7 +81,7 @@ class _PortDetailsScreenState extends State<NewBoardDetailsWidget> {
     if (intResponse.isEmpty) return;
     if (intResponse[0] == 0xaa && intResponse[1] == 0x00) return;
 
-    if (intResponse[0] == 0xaa && intResponse[1] == 0x01) {
+    if (intResponse[0] == 0xaa && intResponse[1] == 0x02) {
       double currentSpeed = TreadmillValues.instance.speed.value;
       if (currentSpeed >= 22) return;
       await RM6T6Protocol.sendCommand(
@@ -89,7 +89,7 @@ class _PortDetailsScreenState extends State<NewBoardDetailsWidget> {
         commandType: WriteCommandType.speed,
       );
     }
-    if (intResponse[0] == 0xaa && intResponse[1] == 0x02) {
+    if (intResponse[0] == 0xaa && intResponse[1] == 0x01) {
       double currentSpeed = TreadmillValues.instance.speed.value;
       if (currentSpeed <= 0) return;
       await RM6T6Protocol.sendCommand(
@@ -97,7 +97,7 @@ class _PortDetailsScreenState extends State<NewBoardDetailsWidget> {
           commandType: WriteCommandType.speed,
       );
     }
-    if (intResponse[0] == 0xaa && intResponse[1] == 0x04) {
+    if (intResponse[0] == 0xaa && intResponse[1] == 0x08) {
       int currentInclination = TreadmillValues.instance.inclination.value;
       if (currentInclination >= 15) return;
       await RM6T6Protocol.sendCommand(
@@ -105,7 +105,7 @@ class _PortDetailsScreenState extends State<NewBoardDetailsWidget> {
           commandType: WriteCommandType.inclination,
       );
     }
-    if (intResponse[0] == 0xaa && intResponse[1] == 0x08) {
+    if (intResponse[0] == 0xaa && intResponse[1] == 0x04) {
       int currentInclination = TreadmillValues.instance.inclination.value;
       if (currentInclination <= 1) return;
       await RM6T6Protocol.sendCommand(
