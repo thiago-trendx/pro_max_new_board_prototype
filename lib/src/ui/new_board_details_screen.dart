@@ -3,7 +3,6 @@ import 'dart:typed_data';
 import 'package:easy_debounce/easy_throttle.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_libserialport/flutter_libserialport.dart';
-
 import '../constants/enums.dart';
 import '../constants/pro_max_protocol.dart';
 import '../constants/treadmill_values.dart';

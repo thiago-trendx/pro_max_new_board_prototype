@@ -1,7 +1,5 @@
 import 'dart:typed_data';
-
 import 'package:flutter/cupertino.dart';
-import 'package:flutter_libserialport/flutter_libserialport.dart';
 import 'package:pro_max_new_board_prototype/src/constants/treadmill_values.dart';
 import 'enums.dart';
 import 'package:collection/collection.dart';
