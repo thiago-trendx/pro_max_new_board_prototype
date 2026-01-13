@@ -1,60 +1,97 @@
-enum WriteCommandType {
-  speed,
-  inclination
+
+/// Function Code
+
+enum A133CommandTypes {
+  writeControlCommand, readControlCommand,
+  writeOneParam, readOneParam,
+  writeMultipleParams, readMultipleParams
 }
 
-extension WriteCommandTypeToINS on WriteCommandType {
-  int toINS() {
-    switch(this) {
-      case WriteCommandType.speed:
-        return 0x90;
-      case WriteCommandType.inclination:
-        return 0x98;
-    }
-  }
-}
-
-extension CommandTypeToMultiFactor on WriteCommandType {
-  num toMultiFactor() {
-    switch(this) {
-      case WriteCommandType.speed:
-        return 600.0;
-      case WriteCommandType.inclination:
-        return 66.6;
-    }
-  }
-}
-
-enum ReadCommandType {
-  speed,
-  inclinationCMD,
-  inclinationPOS
-}
-
-extension ReadCommandTypeToINS on ReadCommandType {
-  int toINS() {
-    switch(this) {
-      case ReadCommandType.speed:
-        return 0x10;
-      case ReadCommandType.inclinationCMD:
-        return 0x18;
-      case ReadCommandType.inclinationPOS:
-        return 0x19;
-    }
-  }
-}
-
-// para velocidade, usamos a mesma relação velocidadeXfrequência expressa
-// no CommandTypeToMultiFactor on WriteCommandType
-extension CommandTypeToDivideFactor on ReadCommandType {
-  double toDivideFactor() {
+extension FunctionCode on A133CommandTypes {
+  int toFunctionCode() {
     switch (this) {
-      case ReadCommandType.speed:
+      case A133CommandTypes.writeControlCommand:
+        return 0x10;
+      case A133CommandTypes.readControlCommand:
+        return 0x11;
+      case A133CommandTypes.writeOneParam:
+        return 0x20;
+      case A133CommandTypes.readOneParam:
+        return 0x21;
+      case A133CommandTypes.writeMultipleParams:
+        return 0x40;
+      case A133CommandTypes.readMultipleParams:
+        return 0x41;
+    }
+  }
+}
+
+/// Instruction Code
+
+enum A133InstructionTypes {
+  stopTreadmill, startTreadmill,
+  emergencyStop, calibrateIncline, clearSlaveErrors
+}
+
+extension InstructionCode on A133InstructionTypes {
+  int toInstructionCode() {
+    switch (this) {
+      case A133InstructionTypes.stopTreadmill:
+        return 0x00;
+      case A133InstructionTypes.startTreadmill:
+        return 0x01;
+      case A133InstructionTypes.emergencyStop:
+        return 0x20;
+      case A133InstructionTypes.calibrateIncline:
+        return 0x21;
+      case A133InstructionTypes.clearSlaveErrors:
+        return 0x24;
+    }
+  }
+}
+
+
+/// Parameter Index
+
+enum A133ParameterIndexTypes {
+  dataPacket, normalDataPacket,
+  setSpeed, actualSpeed, setInclination,
+  liftSegments, saveSettingParameters,
+}
+
+extension IndexParameter on A133ParameterIndexTypes {
+  int toParameterIndex() {
+    switch (this) {
+      case A133ParameterIndexTypes.normalDataPacket:
+        return 0x01;
+      case A133ParameterIndexTypes.dataPacket:
+        return 0x02;
+      case A133ParameterIndexTypes.setSpeed:
+        return 0x23;
+      case A133ParameterIndexTypes.actualSpeed:
+        return 0x24;
+      case A133ParameterIndexTypes.setInclination:
+        return 0x2a;
+      case A133ParameterIndexTypes.liftSegments:
+        return 0x14;
+      case A133ParameterIndexTypes.saveSettingParameters:
+        return 0x64;
+    }
+  }
+}
+
+extension MultiplicationFactor on A133ParameterIndexTypes {
+  int toMultiplicationFactor() {
+    switch (this) {
+      case A133ParameterIndexTypes.normalDataPacket:
+      case A133ParameterIndexTypes.dataPacket:
+      case A133ParameterIndexTypes.setInclination:
+      case A133ParameterIndexTypes.liftSegments:
+      case A133ParameterIndexTypes.saveSettingParameters:
         return 1;
-      case ReadCommandType.inclinationCMD:
-        return 66.6;
-      case ReadCommandType.inclinationPOS:
-        return 66.6;
+      case A133ParameterIndexTypes.setSpeed:
+      case A133ParameterIndexTypes.actualSpeed:
+        return 10;
     }
   }
 }

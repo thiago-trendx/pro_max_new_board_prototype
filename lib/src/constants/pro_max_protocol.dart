@@ -1,98 +1,66 @@
-import 'dart:typed_data';
-import 'package:flutter/cupertino.dart';
-import 'package:pro_max_new_board_prototype/src/constants/treadmill_values.dart';
 import 'enums.dart';
-import 'package:collection/collection.dart';
 
-abstract class RM6T6Protocol {
+abstract class A133Protocol {
 
-  // formatará os dados que serão enviados para o inversor RM6T6,
-  // de acordo com o manual (req => ins => data => crc => end)
-  static List<int> formatWriteRequisition(
-      {required num value, required WriteCommandType type}) {
-    List<int> reqAndIns = [0xf6, type.toINS()];
-    List<int> dataRaw =
-    _getDataFormatted(value: value, multFactor: type.toMultiFactor());
-    List<int> dataSplit = _splitCode(dataRaw);
-    List<int> crcRaw = _getCrc(type.toINS(), dataRaw);
-    List<int> crcSplit = _splitCode(crcRaw);
-    List<int> end = [0xf4];
-
-    List<int> finalData = reqAndIns + dataSplit + crcSplit + end;
-    return finalData;
-  }
-
-  // formatará os dados que serão enviados para o inversor RM6T6,
-  // com protocolo de leitura: req => ins => crc => end
-  static List<int> formatReadRequisition({required ReadCommandType type}) {
-    List<int> reqAndIns = [0xf6, type.toINS()];
-    List<int> crc = _getCrc(type.toINS(), []);
-    List<int> end = [0xf4];
-
-    List<int> finalData = reqAndIns + crc + end;
-    return finalData;
-  }
-
-  // formatará os dados de retorno do inversor RM6T6,
-  // no padrão ans => ins => data(2 ou 3 bytes) => stu => crc(2 ou 3 bytes) => end
-  static double? formatDataReceived(
-      {required List<int> answer, required ReadCommandType type}) {
-    bool hasSplitOnData = answer[2] == 0xf7 || answer[3] == 0xf7;
-    bool hasSplitOnCrc = hasSplitOnData
-        ? answer[6] == 0xf7 || answer[7] == 0xf7
-        : answer[5] == 0xf7 || answer[6] == 0xf7;
-    int stu = hasSplitOnData ? answer[5] : answer[4];
-    List<int> data = _getDataBytes(answer, hasSplitOnData);
-    List<int> dataRawAndStu = _getDataRaw(data) + [stu];
-    List<int> crcCalculated = _splitCode(_getCrc(type.toINS(), dataRawAndStu));
-    List<int> crcfromInverter = _getCrcBytes(answer, hasSplitOnData, hasSplitOnCrc);
-
-    bool canContinue = _confirmCRC(crcCalculated, crcfromInverter);
-
-    if (canContinue) {
-      int result = int.parse(data.map((n) => n.toString()).join());
-      double finalValue = (result / type.toDivideFactor()).toDouble();
-      return finalValue;
+  static List<int> formatOneParameterCmd({
+    required A133CommandTypes commandType,
+    required A133ParameterIndexTypes parameterIndex,
+    num? value,
+  }) {
+    List<int> startFlag = [0xff];
+    List<int> functionCode = [commandType.toFunctionCode()];
+    List<int> paramIndex = [parameterIndex.toParameterIndex()];
+    late List<int> parameterValueRaw;
+    late List<int> parameterValueSplit;
+    if (value != null) {
+      parameterValueRaw = _getDataFormatted(
+          value: value, multFactor: parameterIndex.toMultiplicationFactor());
+      parameterValueSplit = _splitCode(parameterValueRaw);
     } else {
-      debugPrint('bytes corrompidos');
-      return null;
+      parameterValueSplit = [];
     }
-  }
-
-  static List<int> _getDataBytes(List<int> answer, bool hasSplitOnData) {
-    // Determine the number of items to include based on the hasSplitOnData flag
-    int endIndex = hasSplitOnData ? 5 : 4;
-    return answer.sublist(2, endIndex+1);
-  }
-
-  static List<int> _getCrcBytes(List<int> answer, bool hasSplitOnData, bool hasSplitOnCrc) {
-    int startIndex = hasSplitOnData ? 6 : 5;
-    int endIndex = hasSplitOnData
-        ? (hasSplitOnCrc ? 8 : 7)
-        : (hasSplitOnCrc ? 7 : 6);
-    return answer.sublist(startIndex, endIndex+1);
-  }
-
-  static List<int> _getDataRaw(List<int> data) {
-    List<int> dataList = data;
-    for (int i = 0; i < dataList.length; i++) {
-      if (dataList[i] == 0xf7) {
-        dataList[i] = dataList[i + 1] + 0xf0;
-        dataList.removeAt(i + 1);
-        break;
-      }
+    late List<int> checkSumRaw;
+    if (value != null) {
+      checkSumRaw = _getCrc([commandType.toFunctionCode(),
+        parameterIndex.toParameterIndex()] + parameterValueRaw);
+    } else {
+      checkSumRaw = _getCrc([commandType.toFunctionCode(),
+        parameterIndex.toParameterIndex()]);
     }
-    return dataList;
+    List<int> checkSumSplit = _splitCode(checkSumRaw);
+    List<int> stopFlag = [0xfe];
+
+    List<int> finalData = startFlag + functionCode + paramIndex
+        + parameterValueSplit + checkSumSplit + stopFlag;
+    return finalData;
+  }
+
+  static List<int> formatControlCmd({
+    required A133CommandTypes commandType,
+    required A133InstructionTypes instructionType,
+  }) {
+    List<int> startFlag = [0xff];
+    List<int> functionCode = [commandType.toFunctionCode()];
+    List<int> paramIndex = [instructionType.toInstructionCode()];
+    List<int> checkSumRaw = _getCrc([commandType.toFunctionCode(),
+      instructionType.toInstructionCode()]);
+    List<int> checkSumSplit = _splitCode(checkSumRaw);
+    List<int> stopFlag = [0xfe];
+
+    List<int> finalData = startFlag + functionCode + paramIndex
+        + checkSumSplit + stopFlag;
+    return finalData;
   }
 
   // formata os bytes referentes ao Data na escrita de comandos
-  static List<int> _getDataFormatted({required num value, required num multFactor}) {
+  static List<int> _getDataFormatted(
+      {required num value, required num multFactor}) {
     int convertedValue = (value * multFactor).round();
 
     int partOne = convertedValue >> 8 & 0xFF;
     int partTwo = convertedValue & 0xFF;
 
-    return [partOne, partTwo];
+    return [partTwo, partOne];
   }
 
   // faz o split de comandos começando com 0xf para diferenciar dos comandos reservados
@@ -100,9 +68,9 @@ abstract class RM6T6Protocol {
     final List<int> command = [];
 
     for (int hexNum in value) {
-      if (hexNum >= 0xf0 && hexNum <= 0xf7) {
-        int part1 = 0xf7;
-        int part2 = hexNum - 0xf0;
+      if (hexNum >= 0xfd && hexNum <= 0xff) {
+        int part1 = 0xfd;
+        int part2 = hexNum - 0xfd;
         command.add(part1);
         command.add(part2);
       } else {
@@ -114,9 +82,7 @@ abstract class RM6T6Protocol {
   }
 
   // calcula o CRC (check sum)
-  static List<int> _getCrc(int ins, List<int>? data) {
-    List<int> command = [ins] + data!;
-
+  static List<int> _getCrc(List<int> command) {
     int length = command.length;
 
     int regCRC = 0xffff;
@@ -127,7 +93,7 @@ abstract class RM6T6Protocol {
 
       for (int i = 0; i < 8; i++) {
         if (regCRC & 0x01 == 1) {
-          regCRC = (regCRC >> 1) ^ 0xa001;
+          regCRC = (regCRC >> 1) ^ 0x8408;
         } else {
           regCRC = regCRC >> 1;
         }
@@ -135,33 +101,6 @@ abstract class RM6T6Protocol {
       length--;
       index++;
     }
-    return [regCRC >> 8 & 0xFF, regCRC & 0xFF];
-  }
-
-  // confirma o CRC (check sum)
-  static bool _confirmCRC(List<int> crcCalculated, List<int> crcFromInverter) {
-    Function eq = const ListEquality().equals;
-    if (eq(crcCalculated, crcFromInverter)) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-  static Future<void> sendCommand({
-    required num value,
-    required WriteCommandType commandType,
-  }) async {
-    if (TreadmillValues.instance.runWaySerialPort.value == null) return;
-    List<int>? command = formatWriteRequisition(value: value, type: commandType);
-
-    TreadmillValues.instance.runWaySerialPort.value!.write(Uint8List.fromList(command));
-    TreadmillValues.instance.setLastCommandSent(
-        command.map((b) => b.toRadixString(16).padLeft(2, '0')).join(' '));
-    if (commandType == WriteCommandType.speed) {
-      TreadmillValues.instance.setSpeed(value.toDouble());
-    } else {
-      TreadmillValues.instance.setInclination(value.toInt());
-    }
+    return [regCRC & 0xFF, regCRC >> 8 & 0xFF];
   }
 }

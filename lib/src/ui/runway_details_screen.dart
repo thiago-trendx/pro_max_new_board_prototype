@@ -100,18 +100,28 @@ class _PortDetailsScreenState extends State<RunWayDetailsScreen> {
                     if (TreadmillValues.instance.speed.value == 0) {
                       TreadmillValues.instance.setSpeed(1);
                     }
-                    _reservedCommand(TreadmillCommands.initialize);
+                    _reservedCommand(
+                        A133Protocol.formatControlCmd(
+                          instructionType: A133InstructionTypes.startTreadmill,
+                          commandType: A133CommandTypes.writeControlCommand,
+                        )
+                    );
                   },
                   child: const Text('START'),
                 ),
                 const SizedBox(width: 30),
                 ElevatedButton(
-                  onPressed: () => _reservedCommand(TreadmillCommands.stop0x00),
+                  onPressed: () => _reservedCommand(
+                      A133Protocol.formatControlCmd(
+                        instructionType: A133InstructionTypes.stopTreadmill,
+                        commandType: A133CommandTypes.writeControlCommand,
+                      )
+                  ),
                   child: const Text('STOP'),
                 ),
                 const SizedBox(width: 30),
                 ElevatedButton(
-                  onPressed: () => _reservedCommand(TreadmillCommands.verifyError),
+                  onPressed: () => _reservedCommand(TreadmillCommands.readNormalDataPacket),
                   child: const Text('Verify Error'),
                 ),
               ],
@@ -121,71 +131,91 @@ class _PortDetailsScreenState extends State<RunWayDetailsScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 ElevatedButton(
-                  onPressed: () => RM6T6Protocol.sendCommand(
-                      value: 1, commandType: WriteCommandType.speed
+                  onPressed: () => A133Protocol.formatOneParameterCmd(
+                      value: 1,
+                      parameterIndex: A133ParameterIndexTypes.setSpeed,
+                      commandType: A133CommandTypes.writeOneParam,
                   ),
                   child: const Text('Speed 01'),
                 ),
                 const SizedBox(width: 30),
                 ElevatedButton(
-                  onPressed: () => RM6T6Protocol.sendCommand(
-                      value: 2, commandType: WriteCommandType.speed
+                  onPressed: () => A133Protocol.formatOneParameterCmd(
+                      value: 2,
+                      parameterIndex: A133ParameterIndexTypes.setSpeed,
+                      commandType: A133CommandTypes.writeOneParam,
                   ),
                   child: const Text('Speed 02'),
                 ),
                 const SizedBox(width: 30),
                 ElevatedButton(
-                  onPressed: () => RM6T6Protocol.sendCommand(
-                      value: 3, commandType: WriteCommandType.speed
+                  onPressed: () => A133Protocol.formatOneParameterCmd(
+                      value: 3,
+                      parameterIndex: A133ParameterIndexTypes.setSpeed,
+                      commandType: A133CommandTypes.writeOneParam,
                   ),
                   child: const Text('Speed 03'),
                 ),
                 const SizedBox(width: 30),
                 ElevatedButton(
-                  onPressed: () => RM6T6Protocol.sendCommand(
-                      value: 4, commandType: WriteCommandType.speed
+                  onPressed: () => A133Protocol.formatOneParameterCmd(
+                      value: 4,
+                      parameterIndex: A133ParameterIndexTypes.setSpeed,
+                      commandType: A133CommandTypes.writeOneParam,
                   ),
                   child: const Text('Speed 04'),
                 ),
                 const SizedBox(width: 30),
                 ElevatedButton(
-                  onPressed: () => RM6T6Protocol.sendCommand(
-                      value: 5, commandType: WriteCommandType.speed
+                  onPressed: () => A133Protocol.formatOneParameterCmd(
+                      value: 5,
+                      parameterIndex: A133ParameterIndexTypes.setSpeed,
+                      commandType: A133CommandTypes.writeOneParam,
                   ),
                   child: const Text('Speed 05'),
                 ),
                 const SizedBox(width: 30),
                 ElevatedButton(
-                  onPressed: () => RM6T6Protocol.sendCommand(
-                    value: 6, commandType: WriteCommandType.speed
+                  onPressed: () => A133Protocol.formatOneParameterCmd(
+                    value: 6,
+                    parameterIndex: A133ParameterIndexTypes.setSpeed,
+                    commandType: A133CommandTypes.writeOneParam,
                   ),
                   child: const Text('Speed 06'),
                 ),
                 const SizedBox(width: 30),
                 ElevatedButton(
-                  onPressed: () => RM6T6Protocol.sendCommand(
-                    value: 7, commandType: WriteCommandType.speed
+                  onPressed: () => A133Protocol.formatOneParameterCmd(
+                    value: 7,
+                    parameterIndex: A133ParameterIndexTypes.setSpeed,
+                    commandType: A133CommandTypes.writeOneParam,
                   ),
                   child: const Text('Speed 07'),
                 ),
                 const SizedBox(width: 30),
                 ElevatedButton(
-                  onPressed: () => RM6T6Protocol.sendCommand(
-                    value: 8, commandType: WriteCommandType.speed
+                  onPressed: () => A133Protocol.formatOneParameterCmd(
+                    value: 8,
+                    parameterIndex: A133ParameterIndexTypes.setSpeed,
+                    commandType: A133CommandTypes.writeOneParam,
                   ),
                   child: const Text('Speed 08'),
                 ),
                 const SizedBox(width: 30),
                 ElevatedButton(
-                  onPressed: () => RM6T6Protocol.sendCommand(
-                    value: 9, commandType: WriteCommandType.speed
+                  onPressed: () => A133Protocol.formatOneParameterCmd(
+                    value: 9,
+                    parameterIndex: A133ParameterIndexTypes.setSpeed,
+                    commandType: A133CommandTypes.writeOneParam,
                   ),
                   child: const Text('Speed 09'),
                 ),
                 const SizedBox(width: 30),
                 ElevatedButton(
-                  onPressed: () => RM6T6Protocol.sendCommand(
-                    value: 10, commandType: WriteCommandType.speed
+                  onPressed: () => A133Protocol.formatOneParameterCmd(
+                    value: 10,
+                    parameterIndex: A133ParameterIndexTypes.setSpeed,
+                    commandType: A133CommandTypes.writeOneParam,
                   ),
                   child: const Text('Speed 10'),
                 ),
@@ -196,57 +226,73 @@ class _PortDetailsScreenState extends State<RunWayDetailsScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 ElevatedButton(
-                  onPressed: () => RM6T6Protocol.sendCommand(
-                    value: 1, commandType: WriteCommandType.inclination
+                  onPressed: () => A133Protocol.formatOneParameterCmd(
+                    value: 1,
+                    parameterIndex: A133ParameterIndexTypes.setInclination,
+                    commandType: A133CommandTypes.writeOneParam,
                   ),
                   child: const Text('Inclination 01'),
                 ),
                 const SizedBox(width: 30),
                 ElevatedButton(
-                  onPressed: () => RM6T6Protocol.sendCommand(
-                    value: 2, commandType: WriteCommandType.inclination
+                  onPressed: () => A133Protocol.formatOneParameterCmd(
+                    value: 2,
+                    parameterIndex: A133ParameterIndexTypes.setInclination,
+                    commandType: A133CommandTypes.writeOneParam,
                   ),
                   child: const Text('Inclination 02'),
                 ),
                 const SizedBox(width: 30),
                 ElevatedButton(
-                  onPressed: () => RM6T6Protocol.sendCommand(
-                    value: 3, commandType: WriteCommandType.inclination
+                  onPressed: () => A133Protocol.formatOneParameterCmd(
+                    value: 3,
+                    parameterIndex: A133ParameterIndexTypes.setInclination,
+                    commandType: A133CommandTypes.writeOneParam,
                   ),
                   child: const Text('Inclination 03'),
                 ),
                 const SizedBox(width: 30),
                 ElevatedButton(
-                  onPressed: () => RM6T6Protocol.sendCommand(
-                    value: 4, commandType: WriteCommandType.inclination
+                  onPressed: () => A133Protocol.formatOneParameterCmd(
+                    value: 4,
+                    parameterIndex: A133ParameterIndexTypes.setInclination,
+                    commandType: A133CommandTypes.writeOneParam,
                   ),
                   child: const Text('Inclination 04'),
                 ),
                 const SizedBox(width: 30),
                 ElevatedButton(
-                  onPressed: () => RM6T6Protocol.sendCommand(
-                      value: 5, commandType: WriteCommandType.inclination
+                  onPressed: () => A133Protocol.formatOneParameterCmd(
+                      value: 5,
+                      parameterIndex: A133ParameterIndexTypes.setInclination,
+                      commandType: A133CommandTypes.writeOneParam,
                   ),
                   child: const Text('Inclination 05'),
                 ),
                 const SizedBox(width: 30),
                 ElevatedButton(
-                  onPressed: () => RM6T6Protocol.sendCommand(
-                      value: 6, commandType: WriteCommandType.inclination
+                  onPressed: () => A133Protocol.formatOneParameterCmd(
+                      value: 6,
+                      parameterIndex: A133ParameterIndexTypes.setInclination,
+                      commandType: A133CommandTypes.writeOneParam,
                   ),
                   child: const Text('Inclination 06'),
                 ),
                 const SizedBox(width: 30),
                 ElevatedButton(
-                  onPressed: () => RM6T6Protocol.sendCommand(
-                      value: 7, commandType: WriteCommandType.inclination
+                  onPressed: () => A133Protocol.formatOneParameterCmd(
+                      value: 7,
+                      parameterIndex: A133ParameterIndexTypes.setInclination,
+                      commandType: A133CommandTypes.writeOneParam,
                   ),
                   child: const Text('Inclination 07'),
                 ),
                 const SizedBox(width: 30),
                 ElevatedButton(
-                  onPressed: () => RM6T6Protocol.sendCommand(
-                      value: 8, commandType: WriteCommandType.inclination
+                  onPressed: () => A133Protocol.formatOneParameterCmd(
+                      value: 8,
+                      parameterIndex: A133ParameterIndexTypes.setInclination,
+                      commandType: A133CommandTypes.writeOneParam,
                   ),
                   child: const Text('Inclination 08'),
                 ),

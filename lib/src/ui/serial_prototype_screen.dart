@@ -4,6 +4,7 @@ import 'package:flutter_libserialport/flutter_libserialport.dart';
 import 'package:pro_max_new_board_prototype/src/constants/treadmill_values.dart';
 import 'package:pro_max_new_board_prototype/src/ui/new_board_details_screen.dart';
 import 'package:pro_max_new_board_prototype/src/ui/runway_details_screen.dart';
+import '../constants/pro_max_commands.dart';
 
 class SerialPrototypeScreen extends StatefulWidget {
   const SerialPrototypeScreen({Key? key}) : super(key: key);
@@ -38,7 +39,7 @@ class _SerialScreenState extends State<SerialPrototypeScreen> {
   Future<void> _validatePort(SerialPort serialPort) async {
     try {
       serialPort.openReadWrite();
-      serialPort.write(Uint8List.fromList([0xff, 0x41, 0x01, 0x8f, 0xbe, 0xfe]));
+      serialPort.write(Uint8List.fromList(TreadmillCommands.readNormalDataPacket));
       await Future.delayed(const Duration(milliseconds: 200));
       final Uint8List response = serialPort.read(23);
 
