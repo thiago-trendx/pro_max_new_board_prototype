@@ -4,7 +4,7 @@ import 'package:flutter_libserialport/flutter_libserialport.dart';
 import 'package:pro_max_new_board_prototype/src/constants/treadmill_values.dart';
 import 'package:pro_max_new_board_prototype/src/ui/new_board_details_screen.dart';
 import 'package:pro_max_new_board_prototype/src/ui/runway_details_screen.dart';
-import '../constants/pro_max_commands.dart';
+import '../constants/runway_commands.dart';
 
 class SerialPrototypeScreen extends StatefulWidget {
   const SerialPrototypeScreen({Key? key}) : super(key: key);

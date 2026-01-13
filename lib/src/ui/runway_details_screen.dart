@@ -3,8 +3,8 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_libserialport/flutter_libserialport.dart';
 import '../constants/enums.dart';
-import '../constants/pro_max_commands.dart';
-import '../constants/pro_max_protocol.dart';
+import '../constants/runway_commands.dart';
+import '../constants/runway_protocol.dart';
 import '../constants/treadmill_values.dart';
 
 class RunWayDetailsScreen extends StatefulWidget {
