@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_libserialport/flutter_libserialport.dart';
 import 'package:pro_max_new_board_prototype/src/constants/treadmill_values.dart';
 import 'package:pro_max_new_board_prototype/src/ui/new_board_details_screen.dart';
-import 'package:pro_max_new_board_prototype/src/ui/pro_max_details_screen.dart';
+import 'package:pro_max_new_board_prototype/src/ui/runway_details_screen.dart';
 
 class SerialPrototypeScreen extends StatefulWidget {
   const SerialPrototypeScreen({Key? key}) : super(key: key);
@@ -38,15 +38,15 @@ class _SerialScreenState extends State<SerialPrototypeScreen> {
   Future<void> _validatePort(SerialPort serialPort) async {
     try {
       serialPort.openReadWrite();
-      serialPort.write(Uint8List.fromList([0xf6, 0x1a, 0x8b, 0x3e, 0xf4]));
+      serialPort.write(Uint8List.fromList([0xff, 0x41, 0x01, 0x8f, 0xbe, 0xfe]));
       await Future.delayed(const Duration(milliseconds: 200));
-      final Uint8List response = serialPort.read(6);
+      final Uint8List response = serialPort.read(23);
 
-      if (response[0] == 0xf1) {
-        goperPorts.add(GoperPort(serialPort, PortType.proMax));
+      if (response[0] == 0xff) {
+        goperPorts.add(GoperPort(serialPort, PortType.runWay));
         return;
       }
-      if (response[0] == 0xaa) {
+      if (response[0] == 0xaa && response[4] == 0x55) {
         goperPorts.add(GoperPort(serialPort, PortType.newBoard));
         return;
       }
@@ -61,7 +61,7 @@ class _SerialScreenState extends State<SerialPrototypeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Pro Max New Board Prototype'),
+        title: const Text('RunWay New Board Prototype'),
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
@@ -100,7 +100,7 @@ class _SerialScreenState extends State<SerialPrototypeScreen> {
                                 '${goperPort.port.name} '
                                 '-- ${goperPort.portType.portTypeText}',
                               style: TextStyle(
-                                fontWeight: goperPort.portType == PortType.proMax ||
+                                fontWeight: goperPort.portType == PortType.runWay ||
                                     goperPort.portType == PortType.newBoard
                                       ? FontWeight.bold
                                       : FontWeight.normal,
@@ -128,9 +128,9 @@ class _SerialScreenState extends State<SerialPrototypeScreen> {
                                   newBoardPort: goperPort.port,
                               );
                             }
-                            TreadmillValues.instance.setProMaxSerialPort(goperPort.port);
-                            return ProMaxDetailsScreen(
-                                portName: TreadmillValues.instance.proMaxSerialPort.value!);
+                            TreadmillValues.instance.setRunWaySerialPort(goperPort.port);
+                            return RunWayDetailsScreen(
+                                portName: TreadmillValues.instance.runWaySerialPort.value!);
                           },
                         ),
                       ),
@@ -187,15 +187,15 @@ class GoperPort {
   GoperPort(this.port, this.portType);
 }
 
-enum PortType { newBoard, proMax, unidentified, notAvailable }
+enum PortType { newBoard, runWay, unidentified, notAvailable }
 
 extension PortTypeExtension on PortType {
   String get portTypeText {
     switch (this) {
       case PortType.newBoard:
         return 'Keyboard button board';
-      case PortType.proMax:
-        return 'Pro Max treadmill board';
+      case PortType.runWay:
+        return 'RunWay treadmill board';
       case PortType.unidentified:
         return 'Unidentified';
       case PortType.notAvailable:

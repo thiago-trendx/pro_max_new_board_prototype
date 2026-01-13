@@ -152,10 +152,10 @@ abstract class RM6T6Protocol {
     required num value,
     required WriteCommandType commandType,
   }) async {
-    if (TreadmillValues.instance.proMaxSerialPort.value == null) return;
+    if (TreadmillValues.instance.runWaySerialPort.value == null) return;
     List<int>? command = formatWriteRequisition(value: value, type: commandType);
 
-    TreadmillValues.instance.proMaxSerialPort.value!.write(Uint8List.fromList(command));
+    TreadmillValues.instance.runWaySerialPort.value!.write(Uint8List.fromList(command));
     TreadmillValues.instance.setLastCommandSent(
         command.map((b) => b.toRadixString(16).padLeft(2, '0')).join(' '));
     if (commandType == WriteCommandType.speed) {

@@ -20,9 +20,7 @@ class NewBoardDetailsWidget extends StatefulWidget {
 
 class _PortDetailsScreenState extends State<NewBoardDetailsWidget> {
   String? response;
-
   late final SerialPort port;
-
   StreamSubscription<Uint8List>? subscription;
 
   @override
@@ -82,7 +80,7 @@ class _PortDetailsScreenState extends State<NewBoardDetailsWidget> {
 
     if (intResponse[0] == 0xaa && intResponse[1] == 0x02) {
       double currentSpeed = TreadmillValues.instance.speed.value;
-      if (currentSpeed >= 22) return;
+      if (currentSpeed >= 19) return;
       await RM6T6Protocol.sendCommand(
         value: (currentSpeed * 10 + 1) / 10,
         commandType: WriteCommandType.speed,

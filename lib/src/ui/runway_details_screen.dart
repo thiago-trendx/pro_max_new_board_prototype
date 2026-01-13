@@ -7,18 +7,18 @@ import '../constants/pro_max_commands.dart';
 import '../constants/pro_max_protocol.dart';
 import '../constants/treadmill_values.dart';
 
-class ProMaxDetailsScreen extends StatefulWidget {
+class RunWayDetailsScreen extends StatefulWidget {
   final SerialPort portName;
-  const ProMaxDetailsScreen({
+  const RunWayDetailsScreen({
     required this.portName,
     Key? key,
   }) : super(key: key);
 
   @override
-  State<ProMaxDetailsScreen> createState() => _PortDetailsScreenState();
+  State<RunWayDetailsScreen> createState() => _PortDetailsScreenState();
 }
 
-class _PortDetailsScreenState extends State<ProMaxDetailsScreen> {
+class _PortDetailsScreenState extends State<RunWayDetailsScreen> {
   String? response;
   String? lastCommandSent;
   late final SerialPort port;
@@ -51,7 +51,7 @@ class _PortDetailsScreenState extends State<ProMaxDetailsScreen> {
     port.openReadWrite();
 
     port.config = SerialPortConfig()
-      ..baudRate = 9600
+      ..baudRate = 38400
       ..bits = 8
       ..stopBits = 1
       ..parity = SerialPortParity.none
