@@ -4,7 +4,6 @@ import 'package:flutter_libserialport/flutter_libserialport.dart';
 import 'package:pro_max_new_board_prototype/src/constants/treadmill_values.dart';
 import 'package:pro_max_new_board_prototype/src/ui/new_board_details_screen.dart';
 import 'package:pro_max_new_board_prototype/src/ui/runway_details_screen.dart';
-import '../constants/runway_commands.dart';
 
 class SerialPrototypeScreen extends StatefulWidget {
   const SerialPrototypeScreen({Key? key}) : super(key: key);
@@ -28,6 +27,7 @@ class _SerialScreenState extends State<SerialPrototypeScreen> {
     isLoading.value = true;
     availablePorts = SerialPort.availablePorts;
     for (var port in SerialPort.availablePorts) {
+      print('aqui abrindo porta $port');
       final SerialPort serialPort = SerialPort(port);
       await _validatePort(serialPort);
       serialPort.close();
@@ -39,20 +39,38 @@ class _SerialScreenState extends State<SerialPrototypeScreen> {
   Future<void> _validatePort(SerialPort serialPort) async {
     try {
       serialPort.openReadWrite();
-      serialPort.write(Uint8List.fromList(TreadmillCommands.readNormalDataPacket));
-      await Future.delayed(const Duration(milliseconds: 200));
-      final Uint8List response = serialPort.read(23);
 
-      if (response[0] == 0xff) {
-        goperPorts.add(GoperPort(serialPort, PortType.runWay));
+      // verifica placa do painel
+      await Future.delayed(const Duration(milliseconds: 200));
+      final Uint8List responseNewBoard = serialPort.read(4);
+      print('aqui responseNewBoard: $responseNewBoard');
+      if (responseNewBoard.contains(0xaa) && responseNewBoard.contains(0x55)){
+        print('aqui 02 0xaa');
+        goperPorts.add(GoperPort(serialPort, PortType.newBoard));
         return;
       }
-      if (response[0] == 0xaa && response[4] == 0x55) {
-        goperPorts.add(GoperPort(serialPort, PortType.newBoard));
+
+      // verifica inversor da runway
+      serialPort.config = SerialPortConfig()
+        ..baudRate = 38400
+        ..bits = 8
+        ..stopBits = 1
+        ..parity = SerialPortParity.none
+        ..setFlowControl(SerialPortFlowControl.none);
+
+      serialPort.write(Uint8List.fromList([0xff, 0x41, 0x01, 0x8f, 0xbe, 0xfe]));
+      await Future.delayed(const Duration(milliseconds: 200));
+      final Uint8List responseRunWay = serialPort.read(23);
+      print('aqui resposta da escrita corrigido: $responseRunWay');
+
+      if (responseRunWay.contains(0xff) && responseRunWay.contains(0xfe)) {
+        print('aqui 01 0xff');
+        goperPorts.add(GoperPort(serialPort, PortType.runWay));
         return;
       }
       goperPorts.add(GoperPort(serialPort, PortType.unidentified));
     } catch (e) {
+      print('aqui 03 catch: $e');
       goperPorts.add(GoperPort(serialPort, PortType.notAvailable));
       return;
     }
