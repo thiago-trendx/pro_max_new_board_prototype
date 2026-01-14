@@ -23,6 +23,7 @@ class _PortDetailsScreenState extends State<RunWayDetailsScreen> {
   String? lastCommandSent;
   late final SerialPort port;
   StreamSubscription<Uint8List>? subscription;
+  Timer? _normalPacketTimer;
 
   @override
   void initState() {
@@ -42,6 +43,8 @@ class _PortDetailsScreenState extends State<RunWayDetailsScreen> {
     port.dispose();
     subscription?.cancel();
     subscription = null;
+    _cancelPacketTimer();
+    _normalPacketTimer = null;
     super.dispose();
   }
 
@@ -57,13 +60,29 @@ class _PortDetailsScreenState extends State<RunWayDetailsScreen> {
       ..parity = SerialPortParity.none
       ..setFlowControl(SerialPortFlowControl.none);
 
+    _initNormalPacketTimer();
     _listenToPort();
   }
 
+  Future<void> _initNormalPacketTimer() async {
+    _cancelPacketTimer();
+    print('aqui iniciando timer');
+    _normalPacketTimer = Timer.periodic(const Duration(milliseconds: 1000), (Timer t) async {
+      List<int> normalDataPacket = [0xff, 0x41, 0x01, 0x8f, 0xbe, 0xfe];
+      port.write(Uint8List.fromList(normalDataPacket));
+    });
+  }
+
+  void _cancelPacketTimer() {
+    print('aqui cancelando timer');
+    _normalPacketTimer?.cancel();
+  }
+
+
   void _listenToPort() {
     SerialPortReader reader = SerialPortReader(port);
-
     subscription = reader.stream.listen((data) {
+      if (data[2] == 0x41) return;
       setState(() {
         response = data.map((b) => b.toRadixString(16).padLeft(2, '0')).join(' ');
       });

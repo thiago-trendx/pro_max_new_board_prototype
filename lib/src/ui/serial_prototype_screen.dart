@@ -38,26 +38,33 @@ class _SerialScreenState extends State<SerialPrototypeScreen> {
 
   Future<void> _validatePort(SerialPort serialPort) async {
     try {
-      serialPort.openReadWrite();
-
       // verifica placa do painel
+      serialPort.openReadWrite();
+      serialPort.config = SerialPortConfig()
+        ..baudRate = 9600
+        ..bits = 8
+        ..stopBits = 1
+        ..parity = SerialPortParity.none
+        ..setFlowControl(SerialPortFlowControl.none);
       await Future.delayed(const Duration(milliseconds: 200));
       final Uint8List responseNewBoard = serialPort.read(4);
       print('aqui responseNewBoard: $responseNewBoard');
+      serialPort.close();
       if (responseNewBoard.contains(0xaa) && responseNewBoard.contains(0x55)){
         print('aqui 02 0xaa');
         goperPorts.add(GoperPort(serialPort, PortType.newBoard));
         return;
       }
 
+      await Future.delayed(const Duration(milliseconds: 500));
       // verifica inversor da runway
+      serialPort.openReadWrite();
       serialPort.config = SerialPortConfig()
         ..baudRate = 38400
         ..bits = 8
         ..stopBits = 1
         ..parity = SerialPortParity.none
         ..setFlowControl(SerialPortFlowControl.none);
-
       serialPort.write(Uint8List.fromList([0xff, 0x41, 0x01, 0x8f, 0xbe, 0xfe]));
       await Future.delayed(const Duration(milliseconds: 200));
       final Uint8List responseRunWay = serialPort.read(23);
