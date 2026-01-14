@@ -1,4 +1,4 @@
-package com.example.pro_max_new_board_prototype
+package com.example.runway_new_board_prototype
 
 import io.flutter.embedding.android.FlutterActivity
 

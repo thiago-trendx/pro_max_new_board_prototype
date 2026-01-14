@@ -81,7 +81,7 @@ class _PortDetailsScreenState extends State<NewBoardDetailsWidget> {
     if (intResponse[0] == 0xaa && intResponse[1] == 0x02) {
       double currentSpeed = TreadmillValues.instance.speed.value;
       if (currentSpeed >= 19) return;
-      A133Protocol.formatOneParameterCmd(
+      A133Protocol.sendOneParamCommand(
         value: (currentSpeed * 10 + 1) / 10,
         parameterIndex: A133ParameterIndexTypes.setSpeed,
         commandType: A133CommandTypes.writeOneParam,
@@ -90,7 +90,7 @@ class _PortDetailsScreenState extends State<NewBoardDetailsWidget> {
     if (intResponse[0] == 0xaa && intResponse[1] == 0x01) {
       double currentSpeed = TreadmillValues.instance.speed.value;
       if (currentSpeed <= 0) return;
-      A133Protocol.formatOneParameterCmd(
+      A133Protocol.sendOneParamCommand(
           value: (currentSpeed * 10 - 1) / 10,
           parameterIndex: A133ParameterIndexTypes.setSpeed,
           commandType: A133CommandTypes.writeOneParam,
@@ -99,18 +99,18 @@ class _PortDetailsScreenState extends State<NewBoardDetailsWidget> {
     if (intResponse[0] == 0xaa && intResponse[1] == 0x08) {
       int currentInclination = TreadmillValues.instance.inclination.value;
       if (currentInclination >= 15) return;
-      A133Protocol.formatOneParameterCmd(
+      A133Protocol.sendOneParamCommand(
           value: currentInclination + 1,
-          parameterIndex: A133ParameterIndexTypes.setSpeed,
+          parameterIndex: A133ParameterIndexTypes.setInclination,
           commandType: A133CommandTypes.writeOneParam,
       );
     }
     if (intResponse[0] == 0xaa && intResponse[1] == 0x04) {
       int currentInclination = TreadmillValues.instance.inclination.value;
       if (currentInclination <= 1) return;
-      A133Protocol.formatOneParameterCmd(
+      A133Protocol.sendOneParamCommand(
           value: currentInclination - 1,
-          parameterIndex: A133ParameterIndexTypes.setSpeed,
+          parameterIndex: A133ParameterIndexTypes.setInclination,
           commandType: A133CommandTypes.writeOneParam,
       );
     }

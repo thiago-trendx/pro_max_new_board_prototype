@@ -1,3 +1,7 @@
+import 'dart:typed_data';
+
+import 'package:runway_new_board_prototype/src/constants/treadmill_values.dart';
+
 import 'enums.dart';
 
 abstract class A133Protocol {
@@ -102,5 +106,43 @@ abstract class A133Protocol {
       index++;
     }
     return [regCRC & 0xFF, regCRC >> 8 & 0xFF];
+  }
+
+  static Future<void> sendOneParamCommand({
+    required num value,
+    required A133CommandTypes commandType,
+    required A133ParameterIndexTypes parameterIndex,
+  }) async {
+    if (TreadmillValues.instance.runWaySerialPort.value == null) return;
+    List<int>? command = formatOneParameterCmd(
+        value: value, commandType: commandType, parameterIndex: parameterIndex
+    );
+
+    TreadmillValues.instance.runWaySerialPort.value!.write(Uint8List.fromList(command));
+    TreadmillValues.instance.setLastCommandSent(
+        command.map((b) => b.toRadixString(16).padLeft(2, '0')).join(' '));
+    if (parameterIndex == A133ParameterIndexTypes.setSpeed) {
+      TreadmillValues.instance.setSpeed(value.toDouble());
+    } else if (parameterIndex == A133ParameterIndexTypes.setInclination) {
+      TreadmillValues.instance.setInclination(value.toInt());
+    }
+  }
+
+  static Future<void> sendControlCommand({
+    required A133CommandTypes commandType,
+    required A133InstructionTypes instructionType,
+  }) async {
+    if (TreadmillValues.instance.runWaySerialPort.value == null) return;
+    List<int>? command = formatControlCmd(
+        commandType: commandType, instructionType: instructionType
+    );
+
+    TreadmillValues.instance.runWaySerialPort.value!.write(Uint8List.fromList(command));
+    TreadmillValues.instance.setLastCommandSent(
+        command.map((b) => b.toRadixString(16).padLeft(2, '0')).join(' '));
+
+    if (instructionType == A133InstructionTypes.startTreadmill) {
+      TreadmillValues.instance.setSpeed(1.0);
+    }
   }
 }

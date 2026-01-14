@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pro_max_new_board_prototype/src/ui/serial_prototype_screen.dart';
+import 'package:runway_new_board_prototype/src/ui/serial_prototype_screen.dart';
 
 void main() => runApp(const MainApp());
 

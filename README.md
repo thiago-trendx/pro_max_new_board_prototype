@@ -1,4 +1,4 @@
-# pro_max_new_board_prototype
+# runway_new_board_prototype
 
 A new Flutter project.
 

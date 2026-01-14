@@ -20,7 +20,6 @@ class RunWayDetailsScreen extends StatefulWidget {
 
 class _PortDetailsScreenState extends State<RunWayDetailsScreen> {
   String? response;
-  String? lastCommandSent;
   late final SerialPort port;
   StreamSubscription<Uint8List>? subscription;
   Timer? _normalPacketTimer;
@@ -119,30 +118,26 @@ class _PortDetailsScreenState extends State<RunWayDetailsScreen> {
                     if (TreadmillValues.instance.speed.value == 0) {
                       TreadmillValues.instance.setSpeed(1);
                     }
-                    _reservedCommand(
-                        A133Protocol.formatControlCmd(
-                          instructionType: A133InstructionTypes.startTreadmill,
-                          commandType: A133CommandTypes.writeControlCommand,
-                        )
+                    A133Protocol.sendControlCommand(
+                      instructionType: A133InstructionTypes.startTreadmill,
+                      commandType: A133CommandTypes.writeControlCommand,
                     );
                   },
                   child: const Text('START'),
                 ),
                 const SizedBox(width: 30),
                 ElevatedButton(
-                  onPressed: () => _reservedCommand(
-                      A133Protocol.formatControlCmd(
-                        instructionType: A133InstructionTypes.stopTreadmill,
-                        commandType: A133CommandTypes.writeControlCommand,
-                      )
+                  onPressed: () => A133Protocol.sendControlCommand(
+                    instructionType: A133InstructionTypes.stopTreadmill,
+                    commandType: A133CommandTypes.writeControlCommand,
                   ),
                   child: const Text('STOP'),
                 ),
-                const SizedBox(width: 30),
-                ElevatedButton(
-                  onPressed: () => _reservedCommand(TreadmillCommands.readNormalDataPacket),
-                  child: const Text('Verify Error'),
-                ),
+                // const SizedBox(width: 30),
+                // ElevatedButton(
+                //   onPressed: () => _reservedCommand(TreadmillCommands.readNormalDataPacket),
+                //   child: const Text('Verify Error'),
+                // ),
               ],
             ),
             const SizedBox(height: 15),
@@ -150,7 +145,7 @@ class _PortDetailsScreenState extends State<RunWayDetailsScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 ElevatedButton(
-                  onPressed: () => A133Protocol.formatOneParameterCmd(
+                  onPressed: () => A133Protocol.sendOneParamCommand(
                       value: 1,
                       parameterIndex: A133ParameterIndexTypes.setSpeed,
                       commandType: A133CommandTypes.writeOneParam,
@@ -159,7 +154,7 @@ class _PortDetailsScreenState extends State<RunWayDetailsScreen> {
                 ),
                 const SizedBox(width: 30),
                 ElevatedButton(
-                  onPressed: () => A133Protocol.formatOneParameterCmd(
+                  onPressed: () => A133Protocol.sendOneParamCommand(
                       value: 2,
                       parameterIndex: A133ParameterIndexTypes.setSpeed,
                       commandType: A133CommandTypes.writeOneParam,
@@ -168,7 +163,7 @@ class _PortDetailsScreenState extends State<RunWayDetailsScreen> {
                 ),
                 const SizedBox(width: 30),
                 ElevatedButton(
-                  onPressed: () => A133Protocol.formatOneParameterCmd(
+                  onPressed: () => A133Protocol.sendOneParamCommand(
                       value: 3,
                       parameterIndex: A133ParameterIndexTypes.setSpeed,
                       commandType: A133CommandTypes.writeOneParam,
@@ -177,7 +172,7 @@ class _PortDetailsScreenState extends State<RunWayDetailsScreen> {
                 ),
                 const SizedBox(width: 30),
                 ElevatedButton(
-                  onPressed: () => A133Protocol.formatOneParameterCmd(
+                  onPressed: () => A133Protocol.sendOneParamCommand(
                       value: 4,
                       parameterIndex: A133ParameterIndexTypes.setSpeed,
                       commandType: A133CommandTypes.writeOneParam,
@@ -186,7 +181,7 @@ class _PortDetailsScreenState extends State<RunWayDetailsScreen> {
                 ),
                 const SizedBox(width: 30),
                 ElevatedButton(
-                  onPressed: () => A133Protocol.formatOneParameterCmd(
+                  onPressed: () => A133Protocol.sendOneParamCommand(
                       value: 5,
                       parameterIndex: A133ParameterIndexTypes.setSpeed,
                       commandType: A133CommandTypes.writeOneParam,
@@ -195,7 +190,7 @@ class _PortDetailsScreenState extends State<RunWayDetailsScreen> {
                 ),
                 const SizedBox(width: 30),
                 ElevatedButton(
-                  onPressed: () => A133Protocol.formatOneParameterCmd(
+                  onPressed: () => A133Protocol.sendOneParamCommand(
                     value: 6,
                     parameterIndex: A133ParameterIndexTypes.setSpeed,
                     commandType: A133CommandTypes.writeOneParam,
@@ -204,7 +199,7 @@ class _PortDetailsScreenState extends State<RunWayDetailsScreen> {
                 ),
                 const SizedBox(width: 30),
                 ElevatedButton(
-                  onPressed: () => A133Protocol.formatOneParameterCmd(
+                  onPressed: () => A133Protocol.sendOneParamCommand(
                     value: 7,
                     parameterIndex: A133ParameterIndexTypes.setSpeed,
                     commandType: A133CommandTypes.writeOneParam,
@@ -213,7 +208,7 @@ class _PortDetailsScreenState extends State<RunWayDetailsScreen> {
                 ),
                 const SizedBox(width: 30),
                 ElevatedButton(
-                  onPressed: () => A133Protocol.formatOneParameterCmd(
+                  onPressed: () => A133Protocol.sendOneParamCommand(
                     value: 8,
                     parameterIndex: A133ParameterIndexTypes.setSpeed,
                     commandType: A133CommandTypes.writeOneParam,
@@ -222,7 +217,7 @@ class _PortDetailsScreenState extends State<RunWayDetailsScreen> {
                 ),
                 const SizedBox(width: 30),
                 ElevatedButton(
-                  onPressed: () => A133Protocol.formatOneParameterCmd(
+                  onPressed: () => A133Protocol.sendOneParamCommand(
                     value: 9,
                     parameterIndex: A133ParameterIndexTypes.setSpeed,
                     commandType: A133CommandTypes.writeOneParam,
@@ -231,7 +226,7 @@ class _PortDetailsScreenState extends State<RunWayDetailsScreen> {
                 ),
                 const SizedBox(width: 30),
                 ElevatedButton(
-                  onPressed: () => A133Protocol.formatOneParameterCmd(
+                  onPressed: () => A133Protocol.sendOneParamCommand(
                     value: 10,
                     parameterIndex: A133ParameterIndexTypes.setSpeed,
                     commandType: A133CommandTypes.writeOneParam,
@@ -245,7 +240,7 @@ class _PortDetailsScreenState extends State<RunWayDetailsScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 ElevatedButton(
-                  onPressed: () => A133Protocol.formatOneParameterCmd(
+                  onPressed: () => A133Protocol.sendOneParamCommand(
                     value: 1,
                     parameterIndex: A133ParameterIndexTypes.setInclination,
                     commandType: A133CommandTypes.writeOneParam,
@@ -254,7 +249,7 @@ class _PortDetailsScreenState extends State<RunWayDetailsScreen> {
                 ),
                 const SizedBox(width: 30),
                 ElevatedButton(
-                  onPressed: () => A133Protocol.formatOneParameterCmd(
+                  onPressed: () => A133Protocol.sendOneParamCommand(
                     value: 2,
                     parameterIndex: A133ParameterIndexTypes.setInclination,
                     commandType: A133CommandTypes.writeOneParam,
@@ -263,7 +258,7 @@ class _PortDetailsScreenState extends State<RunWayDetailsScreen> {
                 ),
                 const SizedBox(width: 30),
                 ElevatedButton(
-                  onPressed: () => A133Protocol.formatOneParameterCmd(
+                  onPressed: () => A133Protocol.sendOneParamCommand(
                     value: 3,
                     parameterIndex: A133ParameterIndexTypes.setInclination,
                     commandType: A133CommandTypes.writeOneParam,
@@ -272,7 +267,7 @@ class _PortDetailsScreenState extends State<RunWayDetailsScreen> {
                 ),
                 const SizedBox(width: 30),
                 ElevatedButton(
-                  onPressed: () => A133Protocol.formatOneParameterCmd(
+                  onPressed: () => A133Protocol.sendOneParamCommand(
                     value: 4,
                     parameterIndex: A133ParameterIndexTypes.setInclination,
                     commandType: A133CommandTypes.writeOneParam,
@@ -281,7 +276,7 @@ class _PortDetailsScreenState extends State<RunWayDetailsScreen> {
                 ),
                 const SizedBox(width: 30),
                 ElevatedButton(
-                  onPressed: () => A133Protocol.formatOneParameterCmd(
+                  onPressed: () => A133Protocol.sendOneParamCommand(
                       value: 5,
                       parameterIndex: A133ParameterIndexTypes.setInclination,
                       commandType: A133CommandTypes.writeOneParam,
@@ -290,7 +285,7 @@ class _PortDetailsScreenState extends State<RunWayDetailsScreen> {
                 ),
                 const SizedBox(width: 30),
                 ElevatedButton(
-                  onPressed: () => A133Protocol.formatOneParameterCmd(
+                  onPressed: () => A133Protocol.sendOneParamCommand(
                       value: 6,
                       parameterIndex: A133ParameterIndexTypes.setInclination,
                       commandType: A133CommandTypes.writeOneParam,
@@ -299,7 +294,7 @@ class _PortDetailsScreenState extends State<RunWayDetailsScreen> {
                 ),
                 const SizedBox(width: 30),
                 ElevatedButton(
-                  onPressed: () => A133Protocol.formatOneParameterCmd(
+                  onPressed: () => A133Protocol.sendOneParamCommand(
                       value: 7,
                       parameterIndex: A133ParameterIndexTypes.setInclination,
                       commandType: A133CommandTypes.writeOneParam,
@@ -308,7 +303,7 @@ class _PortDetailsScreenState extends State<RunWayDetailsScreen> {
                 ),
                 const SizedBox(width: 30),
                 ElevatedButton(
-                  onPressed: () => A133Protocol.formatOneParameterCmd(
+                  onPressed: () => A133Protocol.sendOneParamCommand(
                       value: 8,
                       parameterIndex: A133ParameterIndexTypes.setInclination,
                       commandType: A133CommandTypes.writeOneParam,
@@ -328,10 +323,15 @@ class _PortDetailsScreenState extends State<RunWayDetailsScreen> {
                       style: TextStyle(
                           fontWeight: FontWeight.bold, fontSize: 18),
                     ),
-                    Text(
-                      lastCommandSent ?? '',
-                      style: const TextStyle(
-                          fontWeight: FontWeight.bold, fontSize: 18),
+                    ValueListenableBuilder(
+                      valueListenable: TreadmillValues.instance.lastCommandSent,
+                      builder: (BuildContext context, String? lastCmd, Widget? child) {
+                        return Text(
+                          lastCmd ?? '',
+                          style: const TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 18),
+                        );
+                      },
                     ),
                   ],
                 ),
@@ -357,12 +357,5 @@ class _PortDetailsScreenState extends State<RunWayDetailsScreen> {
         ),
       ),
     );
-  }
-
-  Future<void> _reservedCommand(command) async {
-    port.write(Uint8List.fromList(command));
-    setState(() {
-      lastCommandSent = command.map((b) => b.toRadixString(16).padLeft(2, '0')).join(' ');
-    });
   }
 }
