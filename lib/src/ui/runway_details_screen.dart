@@ -66,7 +66,7 @@ class _PortDetailsScreenState extends State<RunWayDetailsScreen> {
   Future<void> _initNormalPacketTimer() async {
     _cancelPacketTimer();
     print('aqui iniciando timer');
-    _normalPacketTimer = Timer.periodic(const Duration(milliseconds: 1000), (Timer t) async {
+    _normalPacketTimer = Timer.periodic(const Duration(milliseconds: 500), (Timer t) async {
       List<int> normalDataPacket = [0xff, 0x41, 0x01, 0x8f, 0xbe, 0xfe];
       port.write(Uint8List.fromList(normalDataPacket));
     });
@@ -81,12 +81,107 @@ class _PortDetailsScreenState extends State<RunWayDetailsScreen> {
   void _listenToPort() {
     SerialPortReader reader = SerialPortReader(port);
     subscription = reader.stream.listen((data) {
-      if (data[2] == 0x41) return;
+      if (data[2] == 0x41) _normalDataPacketAction(data);
       setState(() {
         response = data.map((b) => b.toRadixString(16).padLeft(2, '0')).join(' ');
       });
     });
   }
+
+  void _normalDataPacketAction(List<int> data) {
+    double currentSpeed = TreadmillValues.instance.speed.value;
+    int currentInclination = TreadmillValues.instance.inclination.value;
+
+
+    if (data[4] == 0x20) {
+      // press inclinação +
+      if (currentInclination >= 16 || currentInclination <= 0) return;
+      A133Protocol.sendOneParamCommand(
+        value: currentInclination + 1,
+        parameterIndex: A133ParameterIndexTypes.setInclination,
+        commandType: A133CommandTypes.writeOneParam,
+      );
+      return;
+    }
+
+    if (data[4] == 0x22) {
+      // hold inclinação +
+      if (currentInclination >= 16 || currentInclination <= 0) return;
+      A133Protocol.sendOneParamCommand(
+        value: currentInclination + 2,
+        parameterIndex: A133ParameterIndexTypes.setInclination,
+        commandType: A133CommandTypes.writeOneParam,
+      );
+      return;
+    }
+
+    if (data[4] == 0x04) {
+      // press inclinação -
+      if (currentInclination >= 16 || currentInclination <= 0) return;
+      A133Protocol.sendOneParamCommand(
+        value: currentInclination - 1,
+        parameterIndex: A133ParameterIndexTypes.setInclination,
+        commandType: A133CommandTypes.writeOneParam,
+      );
+      return;
+    }
+
+    if (data[4] == 0x06) {
+      // hold inclinação -
+      if (currentInclination >= 16 || currentInclination <= 0) return;
+      A133Protocol.sendOneParamCommand(
+        value: currentInclination - 2,
+        parameterIndex: A133ParameterIndexTypes.setInclination,
+        commandType: A133CommandTypes.writeOneParam,
+      );
+      return;
+    }
+
+    if (data[4] == 0x1c) {
+      // press velocidade +
+      if (currentSpeed > 19 || currentSpeed <= 0) return;
+      A133Protocol.sendOneParamCommand(
+        value: (currentSpeed * 10 + 1) / 10,
+        parameterIndex: A133ParameterIndexTypes.setSpeed,
+        commandType: A133CommandTypes.writeOneParam,
+      );
+      return;
+    }
+
+    if (data[4] == 0x1e) {
+      // hold velocidade +
+      if (currentSpeed > 19 || currentSpeed <= 1) return;
+      A133Protocol.sendOneParamCommand(
+        value: currentSpeed + 1,
+        parameterIndex: A133ParameterIndexTypes.setSpeed,
+        commandType: A133CommandTypes.writeOneParam,
+      );
+      return;
+    }
+
+    if (data[4] == 0x14) {
+      // press velocidade -
+      if (currentSpeed > 19 || currentSpeed <= 0) return;
+      A133Protocol.sendOneParamCommand(
+        value: (currentSpeed * 10 - 1) / 10,
+        parameterIndex: A133ParameterIndexTypes.setSpeed,
+        commandType: A133CommandTypes.writeOneParam,
+      );
+      return;
+    }
+
+    if (data[4] == 0x16) {
+      // hold velocidade -
+      if (currentSpeed > 19 || currentSpeed <= 1) return;
+      A133Protocol.sendOneParamCommand(
+        value: currentSpeed - 1,
+        parameterIndex: A133ParameterIndexTypes.setSpeed,
+        commandType: A133CommandTypes.writeOneParam,
+      );
+      return;
+    }
+  }
+
 
   // ==========================================================
 
